@@ -1,0 +1,23 @@
+{
+  "name": "bathomation",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hornegg/bathomation.git"
+  },
+  "author": "hornegg",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hornegg/bathomation/issues"
+  },
+  "homepage": "https://github.com/hornegg/bathomation#readme",
+  "dependencies": {
+    "parcel-bundler": "^1.12.4",
+    "typescript": "^3.8.3"
+  }
+}
+
