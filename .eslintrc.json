@@ -16,7 +16,8 @@
       "eqeqeq": ["error"],
       "no-shadow": ["error"],
       "max-len": ["error", {"code": 140}],
-      "quotes": ["error", "single"]
+      "quotes": ["error", "single"],
+      "no-tabs": ["error"]
     }
   }
 
