@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+import FrameTimingTool from './FrameTimingTool';
+
 const sphereSegments = 16;
 
 const scene = new THREE.Scene();
@@ -35,9 +37,15 @@ camera.position.z = 5;
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
+const timingTool = new FrameTimingTool(30);
+
 const animate = (): void => {
 
-  requestAnimationFrame( animate );
+  setTimeout(() => {
+      requestAnimationFrame( animate );
+    },
+    timingTool.calculateTimeToNextFrame()
+  );
 
   controls.update();
 
