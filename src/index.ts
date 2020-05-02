@@ -10,10 +10,17 @@ const createGroup = (objects: THREE.Object3D[]): THREE.Group => {
 };
 
 const addOutline = (mesh: THREE.Mesh): THREE.Group => {
+
+  const outlineWidth = 0.1;
+  const outlineVec = new THREE.Vector3(outlineWidth, outlineWidth, outlineWidth);
+  const box = new THREE.Box3().setFromObject(mesh);
+  const outlinedBox = new THREE.Box3(box.min.clone().sub(outlineVec), box.max.clone().add(outlineVec));
+
   const material = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
   const outline = new THREE.Mesh(mesh.geometry, material);
   outline.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
-  outline.scale.multiplyScalar(1.05);
+  outline.scale.divide(box.getSize(new THREE.Vector3()));
+  outline.scale.multiply(outlinedBox.getSize(new THREE.Vector3()));
   return createGroup([mesh, outline]);
 };
 
