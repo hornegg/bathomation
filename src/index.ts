@@ -11,7 +11,7 @@ const createGroup = (objects: THREE.Object3D[]): THREE.Group => {
 
 const addOutline = (mesh: THREE.Mesh): THREE.Group => {
 
-  const outlineWidth = 0.1;
+  const outlineWidth = 0.07;
   const outlineVec = new THREE.Vector3(outlineWidth, outlineWidth, outlineWidth);
   const box = new THREE.Box3().setFromObject(mesh);
   const outlinedBox = new THREE.Box3(box.min.clone().sub(outlineVec), box.max.clone().add(outlineVec));
@@ -25,7 +25,7 @@ const addOutline = (mesh: THREE.Mesh): THREE.Group => {
 };
 
 const createSphere = (radius: number): THREE.Geometry => {
-  const sphereSegments = 16;
+  const sphereSegments = 32;
   return new THREE.SphereGeometry(radius, sphereSegments, sphereSegments);
 };
 
@@ -51,18 +51,24 @@ const basicHead = addOutline(
   )
 );
 
+const earVector = new THREE.Vector3(1.44, 0.6, -0.3); // vector between center of head and center of ear
+
 const leftEar = addOutline(
   new THREE.Mesh(
-    createEllipsoid(0.3, 0.3, 0.3),
+    createEllipsoid(0.4, 0.4, 0.25),
     skin
   )
 );
 
-const head = createGroup([basicHead, leftEar]);
+const rightEar = leftEar.clone();
+
+leftEar.position.copy(earVector);
+earVector.x = -earVector.x;
+rightEar.position.copy(earVector);
+
+const head = createGroup([basicHead, leftEar, rightEar]);
 
 scene.add(head);
-
-leftEar.position.set(2, 0, 0);
 
 camera.position.z = 5;
 
