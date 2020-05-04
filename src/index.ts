@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+const ThreeBSP = require('three-js-csg')(THREE);
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import FrameTimingTool from './FrameTimingTool';
@@ -33,23 +34,34 @@ const createEllipsoid = (x: number, y: number, z: number, scalar: number): THREE
   return createSphere(1).applyMatrix4(new THREE.Matrix4().makeScale(x + scalar, y + scalar, z + scalar));
 };
 
-const createHeadGeometry = (scalar: number): THREE.Geometry => {
+const createHeadGeometry = (outline: boolean): THREE.Geometry => {
+  const scalar = outline ? 0.07 : 0;
   const head = createEllipsoid(1.5, 1.0, 1.0, scalar);
 
-  const earVector = new THREE.Vector3(1.44, 0.6, -0.3); // vector between center of head and center of ear
+  // vector between center of head and center of ear
+  const x = 1.44;
+  const y = 0.6;
+  const z = -0.3; 
 
   const leftEar = createEllipsoid(0.4, 0.4, 0.25, scalar);
-  
   const rightEar = leftEar.clone();
   
-  leftEar.translate(earVector.x, earVector.y, earVector.z);
-  earVector.x = -earVector.x;
-  rightEar.translate(earVector.x, earVector.y, earVector.z);
+  leftEar.translate(x, y, z);
+  rightEar.translate(-x, y, z);
   
-  head.merge(leftEar);
-  head.merge(rightEar);
+  const headBsp = new ThreeBSP(head);
+  const leftEarBsp = new ThreeBSP(leftEar);
+  const rightEarBsp = new ThreeBSP(rightEar);
 
-  return head;
+  const leftIntersect = headBsp.intersect(leftEarBsp);
+  const rightIntersect = headBsp.intersect(rightEarBsp);
+
+  return headBsp
+  .union(leftEarBsp)
+  .union(rightEarBsp)
+  .subtract(leftIntersect)
+  .subtract(rightIntersect)
+  .toGeometry();
 };
 
 const scene = new THREE.Scene();
