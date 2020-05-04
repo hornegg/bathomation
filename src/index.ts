@@ -29,8 +29,27 @@ const createSphere = (radius: number): THREE.Geometry => {
   return new THREE.SphereGeometry(radius, sphereSegments, sphereSegments);
 };
 
-const createEllipsoid = (x: number, y: number, z: number): THREE.Geometry => {
-  return createSphere(1).applyMatrix4(new THREE.Matrix4().makeScale(x, y, z));
+const createEllipsoid = (x: number, y: number, z: number, scalar: number): THREE.Geometry => {
+  return createSphere(1).applyMatrix4(new THREE.Matrix4().makeScale(x + scalar, y + scalar, z + scalar));
+};
+
+const createHeadGeometry = (scalar: number): THREE.Geometry => {
+  const head = createEllipsoid(1.5, 1.0, 1.0, scalar);
+
+  const earVector = new THREE.Vector3(1.44, 0.6, -0.3); // vector between center of head and center of ear
+
+  const leftEar = createEllipsoid(0.4, 0.4, 0.25, scalar);
+  
+  const rightEar = leftEar.clone();
+  
+  leftEar.translate(earVector.x, earVector.y, earVector.z);
+  earVector.x = -earVector.x;
+  rightEar.translate(earVector.x, earVector.y, earVector.z);
+  
+  head.merge(leftEar);
+  head.merge(rightEar);
+
+  return head;
 };
 
 const scene = new THREE.Scene();
@@ -43,32 +62,19 @@ renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
 document.body.appendChild( renderer.domElement );
 
 const skin = new THREE.MeshBasicMaterial({color: 0x333333});
+const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
 
-const basicHead = addOutline(
-  new THREE.Mesh(
-    createEllipsoid(1.5, 1.0, 1.0),
-    skin
-  )
+const head = new THREE.Mesh(
+  createHeadGeometry(0),
+  skin
 );
 
-const earVector = new THREE.Vector3(1.44, 0.6, -0.3); // vector between center of head and center of ear
-
-const leftEar = addOutline(
-  new THREE.Mesh(
-    createEllipsoid(0.4, 0.4, 0.25),
-    skin
-  )
+const headOutline = new THREE.Mesh(
+  createHeadGeometry(0.07),
+  outlineMaterial
 );
 
-const rightEar = leftEar.clone();
-
-leftEar.position.copy(earVector);
-earVector.x = -earVector.x;
-rightEar.position.copy(earVector);
-
-const head = createGroup([basicHead, leftEar, rightEar]);
-
-scene.add(head);
+scene.add(head, headOutline);
 
 camera.position.z = 5;
 
