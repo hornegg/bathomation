@@ -9,6 +9,7 @@
       "plugin:@typescript-eslint/eslint-recommended",
       "plugin:@typescript-eslint/recommended"
     ],
+    "ignorePatterns": ["node_modules/"],
     "rules": {
       "@typescript-eslint/semi": ["error"],
       "@typescript-eslint/camelcase": ["off"],

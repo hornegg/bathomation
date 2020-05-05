@@ -4,27 +4,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import FrameTimingTool from './FrameTimingTool';
 
-const createGroup = (objects: THREE.Object3D[]): THREE.Group => {
-  const group = new THREE.Group();
-  objects.forEach(obj => group.add(obj));
-  return group;
-};
-
-const addOutline = (mesh: THREE.Mesh): THREE.Group => {
-
-  const outlineWidth = 0.07;
-  const outlineVec = new THREE.Vector3(outlineWidth, outlineWidth, outlineWidth);
-  const box = new THREE.Box3().setFromObject(mesh);
-  const outlinedBox = new THREE.Box3(box.min.clone().sub(outlineVec), box.max.clone().add(outlineVec));
-
-  const material = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
-  const outline = new THREE.Mesh(mesh.geometry, material);
-  outline.position.set(mesh.position.x, mesh.position.y, mesh.position.z);
-  outline.scale.divide(box.getSize(new THREE.Vector3()));
-  outline.scale.multiply(outlinedBox.getSize(new THREE.Vector3()));
-  return createGroup([mesh, outline]);
-};
-
 const createSphere = (radius: number): THREE.Geometry => {
   const sphereSegments = 32;
   return new THREE.SphereGeometry(radius, sphereSegments, sphereSegments);
@@ -77,12 +56,12 @@ const skin = new THREE.MeshBasicMaterial({color: 0x333333});
 const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
 
 const head = new THREE.Mesh(
-  createHeadGeometry(0),
+  createHeadGeometry(false),
   skin
 );
 
 const headOutline = new THREE.Mesh(
-  createHeadGeometry(0.07),
+  createHeadGeometry(true),
   outlineMaterial
 );
 
