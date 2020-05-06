@@ -43,7 +43,7 @@ class ThreeBSPWorkerizer {
   private csgOperation(methodName: string, other: ThreeBSPWorkerizer): ThreeBSPWorkerizer {
     return new ThreeBSPWorkerizer(this.threeBSP$.toPromise().then((threeBSP) => {
       return new Promise((resolve, reject) => {
-        const worker = new Worker('./ThreeBSPWorker');
+        const worker = new Worker('./ThreeBSPWorker.ts');
 
         worker.onmessage = (e: MessageEvent): void => {
           resolve(e.data);
