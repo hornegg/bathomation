@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-const ThreeBSP = require('three-js-csg')(THREE);
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+import ThreeBSPWorkerizer from './ThreeBSPWorkerizer';
 import FrameTimingTool from './FrameTimingTool';
 
 const createSphere = (radius: number): THREE.Geometry => {
@@ -13,7 +13,7 @@ const createEllipsoid = (x: number, y: number, z: number, scalar: number): THREE
   return createSphere(1).applyMatrix4(new THREE.Matrix4().makeScale(x + scalar, y + scalar, z + scalar));
 };
 
-const createHeadGeometry = (outline: boolean): THREE.Geometry => {
+const createHeadGeometry = (outline: boolean): Promise<THREE.Geometry> => {
   const scalar = outline ? 0.07 : 0;
   const head = createEllipsoid(1.5, 1.0, 1.0, scalar);
 
@@ -28,9 +28,9 @@ const createHeadGeometry = (outline: boolean): THREE.Geometry => {
   leftEar.translate(x, y, z);
   rightEar.translate(-x, y, z);
   
-  const headBsp = new ThreeBSP(head);
-  const leftEarBsp = new ThreeBSP(leftEar);
-  const rightEarBsp = new ThreeBSP(rightEar);
+  const headBsp = new ThreeBSPWorkerizer(head);
+  const leftEarBsp = new ThreeBSPWorkerizer(leftEar);
+  const rightEarBsp = new ThreeBSPWorkerizer(rightEar);
 
   const leftIntersect = headBsp.intersect(leftEarBsp);
   const rightIntersect = headBsp.intersect(rightEarBsp);
@@ -55,37 +55,41 @@ document.body.appendChild( renderer.domElement );
 const skin = new THREE.MeshBasicMaterial({color: 0x333333});
 const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
 
-const head = new THREE.Mesh(
-  createHeadGeometry(false),
-  skin
-);
+Promise.all([createHeadGeometry(false), createHeadGeometry(true)]).then(([headGeometry, headOutlineGeometry]) => {
 
-const headOutline = new THREE.Mesh(
-  createHeadGeometry(true),
-  outlineMaterial
-);
-
-scene.add(head, headOutline);
-
-camera.position.z = 5;
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.update();
-
-const timingTool = new FrameTimingTool(30);
-
-const animate = (): void => {
-
-  setTimeout(() => {
-      requestAnimationFrame( animate );
-    },
-    timingTool.calculateTimeToNextFrame()
+  const head = new THREE.Mesh(
+    headGeometry,
+    skin
   );
 
+  const headOutline = new THREE.Mesh(
+    headOutlineGeometry,
+    outlineMaterial
+  );
+
+  scene.add(head, headOutline);
+
+  camera.position.z = 5;
+
+  const controls = new OrbitControls(camera, renderer.domElement);
   controls.update();
 
-  renderer.render(scene, camera);
-};
+  const timingTool = new FrameTimingTool(30);
 
-animate();
+  const animate = (): void => {
+
+    setTimeout(() => {
+        requestAnimationFrame( animate );
+      },
+      timingTool.calculateTimeToNextFrame()
+    );
+
+    controls.update();
+
+    renderer.render(scene, camera);
+  };
+
+  animate();
+
+});
 
