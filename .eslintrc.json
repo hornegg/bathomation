@@ -14,7 +14,7 @@
       "@typescript-eslint/semi": ["error"],
       "@typescript-eslint/camelcase": ["off"],
       "@typescript-eslint/no-empty-function": ["off"],
-      "@typescript-eslint/no-var-requires": ["off"],
+      "@typescript-eslint/interface-name-prefix": ["off"],
       "eqeqeq": ["error"],
       "no-shadow": ["error"],
       "max-len": ["error", {"code": 140}],
