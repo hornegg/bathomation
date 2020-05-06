@@ -10,38 +10,45 @@ import {filter} from 'rxjs/operators';
 
 class ThreeBSPWorkerizer {
 
-  private threeBSP$: Observable<IThreeBSP>;
+  public subject: BehaviorSubject<IThreeBSP> = new BehaviorSubject(null);
+
+  public threeBSP$: Observable<IThreeBSP> = this.subject.asObservable().pipe(
+    filter((value) => !!value)
+  );
 
   constructor(geometry: THREE.Geometry | Promise<IThreeBSP>) {
-    const subject = new BehaviorSubject(null);
 
     if (geometry instanceof THREE.Geometry) {
-      subject.next(new ThreeBSP(geometry));
+      this.subject.next(new ThreeBSP(geometry));
     } else {
       geometry.then((resolved) => {
-        subject.next(resolved.clone());
+        this.subject.next(resolved.clone());
       });
     }
 
-    this.threeBSP$ = subject.asObservable().pipe(
+    this.threeBSP$ = this.subject.asObservable().pipe(
       filter((value) => !!value)
     );
   }
 
+  toPromise(): Promise<IThreeBSP> {
+    return this.subject.value ? Promise.resolve(this.subject.value) : this.threeBSP$.toPromise();
+  }
+
   toGeometry(): Promise<THREE.Geometry> {
-    return this.threeBSP$.toPromise().then((bsp) => bsp.toGeometry());
+    return this.toPromise().then((bsp) => bsp.toGeometry());
   } 
 
   toMesh(): Promise<THREE.Mesh> {
-    return this.threeBSP$.toPromise().then((bsp) => bsp.toMesh());
+    return this.toPromise().then((bsp) => bsp.toMesh());
   }
 
   clone(): ThreeBSPWorkerizer {
-    return new ThreeBSPWorkerizer(this.threeBSP$.toPromise());
+    return new ThreeBSPWorkerizer(this.toPromise());
   }
 
   private csgOperation(methodName: string, other: ThreeBSPWorkerizer): ThreeBSPWorkerizer {
-    return new ThreeBSPWorkerizer(this.threeBSP$.toPromise().then((threeBSP) => {
+    return new ThreeBSPWorkerizer(this.toPromise().then((threeBSP) => {
       return new Promise((resolve, reject) => {
         const worker = new Worker('./ThreeBSPWorker.ts');
 
@@ -53,8 +60,7 @@ class ThreeBSPWorkerizer {
           reject(e);
         };
 
-//        worker.postMessage(methodName, [threeBSP.clone(), other.clone()]);
-        methodName;
+        worker.postMessage(methodName/*, [threeBSP.clone(), other.clone()]*/);
         threeBSP;
         other;
       });
