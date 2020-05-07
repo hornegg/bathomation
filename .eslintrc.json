@@ -1,26 +1,34 @@
 {
     "root": true,
     "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
-    ],
     "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended"
+      "eslint:recommended"
     ],
-    "ignorePatterns": ["node_modules/"],
+    "ignorePatterns": [
+      "node_modules/",
+      "dist/"
+    ],
     "rules": {
-      "@typescript-eslint/semi": ["error"],
-      "@typescript-eslint/camelcase": ["off"],
-      "@typescript-eslint/no-empty-function": ["off"],
-      "@typescript-eslint/interface-name-prefix": ["off"],
       "eqeqeq": ["error"],
       "no-shadow": ["error"],
       "max-len": ["error", {"code": 140}],
       "quotes": ["error", "single"],
       "no-tabs": ["error"]
-    }
+    },
+    "overrides": [{
+      "files": ["*.ts*"],
+      "plugins": ["@typescript-eslint"],
+      "extends": [
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+      ],
+      "rules": {
+        "@typescript-eslint/semi": ["error"],
+        "@typescript-eslint/camelcase": ["off"],
+        "@typescript-eslint/no-empty-function": ["off"],
+        "@typescript-eslint/interface-name-prefix": ["off"]
+      }
+    }]
   }
 
   

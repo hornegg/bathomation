@@ -11,6 +11,7 @@ console.log('building headGeometry', {outline});
 
 const outfilename = path.join(
   __dirname,
+  '../../dist',
   outline ? 'headOutlineGeometry.json' : 'headGeometry.json'
 );
 

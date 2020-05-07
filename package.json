@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "build": "parcel build src/index.html",
+    "gulp": "gulp",
     "head": "tsc model/src/headGeometry.ts --outDir model/dist && node model/dist/headGeometry.js",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint . --ext .ts --ext .js",
     "start": "parcel src/index.html"
   },
   "repository": {
