@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import * as fs from 'fs';
-import * as path from 'path';
 import * as THREE from 'three';
 const ThreeBSP = require('three-js-csg')(THREE);
 
-const outline = (process.argv[1] === 'true');
+const outfilename = process.argv[2];
+const outline = (process.argv[3] === 'true');
 
 console.log('building headGeometry', {outline});
-
-const outfilename = path.join(
-  __dirname,
-  '../../dist',
-  outline ? 'headOutlineGeometry.json' : 'headGeometry.json'
-);
 
 const createSphere = (radius: number): THREE.Geometry => {
   const sphereSegments = 24;

@@ -14,7 +14,7 @@ const runChangedScript = (src: string, dest: string, args: string[]): void => {
     ignoreInitial = destStat.mtime > srcStat.mtime;
   }
 
-  gulp.watch(src, {ignoreInitial}, function headGeometry(callback) {
+  gulp.watch(src, {ignoreInitial}, (callback): void => {
 
     const script = spawn('node_modules\\.bin\\ts-node.cmd', [src, dest, ...args]);
 
@@ -36,8 +36,8 @@ const runChangedScript = (src: string, dest: string, args: string[]): void => {
 
 const defaultTask = (): void => {
 
-  runChangedScript('model/src/headGeometry.ts', 'dist/headGeometry.json', ['false']);
-//  runChangedScript('model/src/headGeometry.ts', 'dist/outlineHeadGeometry.json', 'true');
+  runChangedScript('model/headGeometry.ts', 'dist/headGeometry.json', ['false']);
+  runChangedScript('model/headGeometry.ts', 'dist/outlineHeadGeometry.json', ['true']);
 
 };
 
