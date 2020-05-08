@@ -3,11 +3,9 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import FrameTimingTool from './FrameTimingTool';
 
-const TWO_PI = 2 * Math.PI;
-
-export function linearMap(value: number, range1start: number, range1end: number, range2start: number, range2end: number): number {
-  return range2start + (range2end - range2start) * ((value - range1start) / (range1end - range1start));
-}
+const PI = Math.PI;
+const TWO_PI = 2 * PI;
+const HALF_PI = 0.5 * PI;
 
 //
 // Set up the scene
@@ -22,8 +20,9 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
 document.body.appendChild( renderer.domElement );
 
-const skin = new THREE.MeshBasicMaterial({color: 0x333333});
+const skin = new THREE.MeshBasicMaterial({color: 0x333333, side: THREE.DoubleSide});
 const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
+const outlineMaterialDouble = new THREE.MeshBasicMaterial({color: 'black', side: THREE.DoubleSide});
 
 //
 // Load the geometry
@@ -54,13 +53,12 @@ const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE
 // Horns
 //
 
-const createHorn = (outline: boolean): THREE.Geometry => {
+const createHorn = (outline: boolean): THREE.Group => {
 
   const scalar = outline ? 0.07 : 0;
   const hornMaxRadius = 0.1 + scalar;
-  const hornLength = 1 + scalar + scalar + scalar + scalar;
-  const lengthSections = 5;
-  const deltaV = 1 / lengthSections;
+  const hornLength = 1 + scalar + scalar;
+  const segments = 10;
 
   const openHorn = (u: number, v: number, vec: THREE.Vector3): void => {
     const hornRadius = (1 - v) * hornMaxRadius;
@@ -73,43 +71,39 @@ const createHorn = (outline: boolean): THREE.Geometry => {
     );
   }; 
 
-  const closedHorn = (u: number, v: number, vec: THREE.Vector3): void => {
-    const closer = (v === 0);
+  const horn = new THREE.ParametricGeometry(openHorn, segments, 5);
 
-    if (!closer) {
-      v = linearMap(v, deltaV, 1, 0, 1);
-    }
+  const mesh = new THREE.Mesh(
+    horn,
+    outline ? outlineMaterial : skin
+  );
 
-    openHorn(u, v, vec);
+  const group = new THREE.Group();
+  group.add(mesh);
 
-    if (closer) {
-      vec.setY(0);
-    }
-  };
+  if (outline) {
+    const circle = new THREE.CircleGeometry(hornMaxRadius + scalar, segments);
+    circle.rotateX(HALF_PI);
 
-  const horn = new THREE.ParametricGeometry(outline ? openHorn : closedHorn, 10, lengthSections);
+    const circleMesh = new THREE.Mesh(
+      circle,
+      outlineMaterialDouble
+    );
 
-  return horn;
+    group.add(circleMesh);
+  }
+
+  return group;
 };
 
 const horn = createHorn(false);
 const hornOutline = createHorn(true);
 
-const hornMesh = new THREE.Mesh(
-  horn,
-  skin
-);
-
-const hornOutlineMesh = new THREE.Mesh(
-  hornOutline,
-  outlineMaterial
-);
-
 const hornGroup = new THREE.Group();
-hornGroup.add(hornMesh);
-hornGroup.add(hornOutlineMesh);
+hornGroup.add(horn);
+hornGroup.add(hornOutline);
 
-hornGroup.translateY(2);
+hornGroup.translateY(1);
 
 scene.add(hornGroup);
 
