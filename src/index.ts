@@ -16,7 +16,7 @@ scene.background = new THREE.Color('white');
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
 document.body.appendChild( renderer.domElement );
 
