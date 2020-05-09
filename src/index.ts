@@ -7,6 +7,21 @@ const PI = Math.PI;
 const TWO_PI = 2 * PI;
 const HALF_PI = 0.5 * PI;
 
+const headWidth = 1.5;
+const headHeight = 1;
+const headDepth = 1;
+
+const ellipticalToCartesian = (r: number, theta: number, phi: number, vec?: THREE.Vector3): THREE.Vector3 => {
+
+  vec = vec ? vec : new THREE.Vector3();
+
+  return vec.set(
+    r * headWidth * Math.sin(theta) * Math.cos(phi),
+    r * headHeight * Math.sin(theta) * Math.sin(phi),
+    r * headDepth * Math.cos(theta)
+  );
+};
+
 //
 // Set up the scene
 //
@@ -53,67 +68,39 @@ const outlineMaterialDouble = new THREE.MeshBasicMaterial({color: 'black', side:
 // Horns
 //
 
-const createHorn = (outline: boolean): THREE.Group => {
-
-  const scalar = outline ? 0.07 : 0;
-  const hornMaxRadius = 0.1 + scalar;
-  const hornLength = 1 + scalar + scalar;
-  const segments = 10;
+const createHorn = (theta: number, phi: number, maxWidth: number, maxDepth: number, length: number, bend: number): THREE.Geometry => {
 
   const openHorn = (u: number, v: number, vec: THREE.Vector3): void => {
-    const hornRadius = (1 - v) * hornMaxRadius;
-    const angle = -TWO_PI * u;
 
-    vec.set(
-      hornRadius * Math.cos(angle),
-      hornLength * v,
-      hornRadius * Math.sin(angle),
-    );  
+    const width = maxWidth * (1 - u);
+    const depth = maxDepth * (1 - u);
+    const angle = -TWO_PI * v;
 
-    vec = vec.applyAxisAngle(new THREE.Vector3(0, 0, 1), 0.5 * hornLength * v);
-  }; 
-
-  const horn = new THREE.ParametricGeometry(openHorn, segments, 10);
-
-  const mesh = new THREE.Mesh(
-    horn,
-    outline ? outlineMaterial : skin
-  );
-
-  const group = new THREE.Group();
-  group.add(mesh);
-
-  if (outline) {
-    const circle = new THREE.CircleGeometry(hornMaxRadius + scalar, segments);
-    circle.rotateX(HALF_PI);
-
-    const circleMesh = new THREE.Mesh(
-      circle,
-      outlineMaterialDouble
+    ellipticalToCartesian(
+      1 + (length * u),
+      theta + (width * Math.sin(angle)),
+      phi + (depth * Math.cos(angle)),
+      vec
     );
 
-    group.add(circleMesh);
-  }
+    vec = vec.applyAxisAngle(new THREE.Vector3(0, 0, 1), bend * length * u);
+  }; 
 
-  return group;
+  const horn = new THREE.ParametricGeometry(openHorn, 10, 10);
+
+  return horn;
 };
 
-const horn = createHorn(false);
-const hornOutline = createHorn(true);
+const horn = new THREE.Mesh(
+  createHorn(HALF_PI, (3/8) * PI, 0.15, 0.1, 1, -0.2),
+  new THREE.MeshBasicMaterial({color: 0xFF0000, side: THREE.DoubleSide})
+);
+
+//const hornOutline = createHorn(true);
 
 const hornGroup = new THREE.Group();
 hornGroup.add(horn);
-hornGroup.add(hornOutline);
-
-// Position the horn.  This is all fine apart from tangents on ellipses not being normal to radial lines.
-
-const headWidth = 1.5;
-const headHeight = 1;
-const angle = Math.PI / 8;
-
-hornGroup.translateX(headWidth * Math.cos(angle + HALF_PI));
-hornGroup.translateY(headHeight * Math.sin(angle + HALF_PI));
-hornGroup.rotateZ(angle);
+//hornGroup.add(hornOutline);
 
 scene.add(hornGroup);
 
