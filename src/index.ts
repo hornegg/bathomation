@@ -68,10 +68,12 @@ const createHorn = (outline: boolean): THREE.Group => {
       hornRadius * Math.cos(angle),
       hornLength * v,
       hornRadius * Math.sin(angle),
-    );
+    );  
+
+    vec = vec.applyAxisAngle(new THREE.Vector3(0, 0, 1), 0.5 * hornLength * v);
   }; 
 
-  const horn = new THREE.ParametricGeometry(openHorn, segments, 5);
+  const horn = new THREE.ParametricGeometry(openHorn, segments, 10);
 
   const mesh = new THREE.Mesh(
     horn,
@@ -103,7 +105,15 @@ const hornGroup = new THREE.Group();
 hornGroup.add(horn);
 hornGroup.add(hornOutline);
 
-hornGroup.translateY(1);
+// Position the horn.  This is all fine apart from tangents on ellipses not being normal to radial lines.
+
+const headWidth = 1.5;
+const headHeight = 1;
+const angle = Math.PI / 8;
+
+hornGroup.translateX(headWidth * Math.cos(angle + HALF_PI));
+hornGroup.translateY(headHeight * Math.sin(angle + HALF_PI));
+hornGroup.rotateZ(angle);
 
 scene.add(hornGroup);
 
