@@ -74,7 +74,7 @@ const createHorn = (theta: number, phi: number, maxWidth: number, maxDepth: numb
 
     const width = maxWidth * (1 - u);
     const depth = maxDepth * (1 - u);
-    const angle = -TWO_PI * v;
+    const angle = TWO_PI * v;
 
     ellipticalToCartesian(
       1 + (length * u),
@@ -91,16 +91,33 @@ const createHorn = (theta: number, phi: number, maxWidth: number, maxDepth: numb
   return horn;
 };
 
-const horn = new THREE.Mesh(
-  createHorn(HALF_PI, (3/8) * PI, 0.15, 0.1, 1, -0.2),
-  new THREE.MeshBasicMaterial({color: 0xFF0000, side: THREE.DoubleSide})
+const leftHorn = new THREE.Mesh(
+  createHorn(HALF_PI, (5/8) * PI, 0.15, 0.1, 1, 0.2),
+  skin
 );
 
-//const hornOutline = createHorn(true);
+const om = 1.4; // Outline multiplier
+
+const leftHornOutline = new THREE.Mesh(
+  createHorn(HALF_PI, (5/8) * PI, 0.15 * om, 0.1 * om, 1.2, 0.2),
+  outlineMaterial
+);
+
+const rightHorn = new THREE.Mesh(
+  createHorn(HALF_PI, (3/8) * PI, 0.15, 0.1, 1, -0.2),
+  skin
+);
+
+const rightHornOutline = new THREE.Mesh(
+  createHorn(HALF_PI, (3/8) * PI, 0.15 * om, 0.1 * om, 1.2, -0.2),
+  outlineMaterial
+);
 
 const hornGroup = new THREE.Group();
-hornGroup.add(horn);
-//hornGroup.add(hornOutline);
+hornGroup.add(leftHorn);
+hornGroup.add(leftHornOutline);
+hornGroup.add(rightHorn);
+hornGroup.add(rightHornOutline);
 
 scene.add(hornGroup);
 
