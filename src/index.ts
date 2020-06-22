@@ -172,11 +172,13 @@ const createArc = (centerTheta, centerPhi, arcRadius, tubeRadius, startAngle, fi
 const foreheadGroup = new THREE.Group();
 
 [0,1,2,3,4].map(v => {
+  
   const theta = 0.75;
   const phi = HALF_PI;
   const r = 0.3;
   v = v + 0.5;
   const u = v + 2;
+
   return createTube(
     theta + (r * Math.cos(v * FIFTH_TAU)),
     phi + (r * Math.sin(v * FIFTH_TAU)),
@@ -184,16 +186,38 @@ const foreheadGroup = new THREE.Group();
     phi + (r * Math.sin(u * FIFTH_TAU)),
     0.02
   );
-}).map(geom => {
-  return new THREE.Mesh(
-    geom,
-    outlineMaterialDouble
-  );
-}).forEach(mesh => {
-  foreheadGroup.add(mesh);
-});
+
+}).map(
+  geom => new THREE.Mesh(geom, outlineMaterialDouble)
+).forEach(
+  mesh => foreheadGroup.add(mesh)
+);
 
 scene.add(foreheadGroup);
+
+//
+// Eyes
+//
+
+const topLidRight = createTube(
+  0.8,
+  0.9,
+  0.3,
+  0.9,
+  0.05
+);
+
+const topLidLeft = topLidRight.clone().scale(-1, 1, 1);
+
+const eyesGroup = new THREE.Group();
+
+[topLidLeft, topLidRight].map(
+  geom => new THREE.Mesh(geom, outlineMaterialDouble)
+).forEach(
+  mesh => eyesGroup.add(mesh)
+);
+
+scene.add(eyesGroup);
 
 //
 // Mouth
