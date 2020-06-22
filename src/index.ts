@@ -214,19 +214,31 @@ scene.add(foreheadGroup);
 // Eyes
 //
 
-const topLidRight = createTube({
+const lid = {
   thetaStart: 0.8,
   phiStart: 0.9,
   thetaEnd: 0.3,
   phiEnd: 0.9,
-  radius: 0.05
+  radius: 0.04
+};
+
+const topLidRight = createTube(lid);
+
+const bottomLidRight = createArc({
+  centerTheta: linearMap(1, 0, 2, lid.thetaStart, lid.thetaEnd),
+  centerPhi: linearMap(1, 0, 2, lid.phiStart, lid.phiEnd),
+  arcRadius: 0.22,
+  tubeRadius: lid.radius,
+  startAngle: PI,
+  finishAngle: TWO_PI
 });
 
 const topLidLeft = topLidRight.clone().scale(-1, 1, 1);
+const bottomLidLeft = bottomLidRight.clone().scale(-1, 1, 1);
 
 const eyesGroup = new THREE.Group();
 
-[topLidLeft, topLidRight].map(
+[topLidLeft, topLidRight, bottomLidLeft, bottomLidRight].map(
   geom => new THREE.Mesh(geom, outlineMaterialDouble)
 ).forEach(
   mesh => eyesGroup.add(mesh)
