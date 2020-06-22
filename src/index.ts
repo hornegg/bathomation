@@ -6,6 +6,7 @@ import FrameTimingTool from './FrameTimingTool';
 const PI = Math.PI;
 const TWO_PI = 2 * PI;
 const HALF_PI = 0.5 * PI;
+const FIFTH_TAU = TWO_PI / 5;
 
 const linearMap = (value: number, range1start: number, range1end: number, range2start: number, range2end: number): number => {
   return range2start + (range2end - range2start) * ((value - range1start) / (range1end - range1start));
@@ -129,6 +130,25 @@ scene.add(hornGroup);
 // Basic shapes upon the ellipical head
 //
 
+const createTube = (thetaStart, phiStart, thetaEnd, phiEnd, radius): THREE.TubeGeometry => {
+
+  console.log('createTube', thetaStart, phiStart, thetaEnd, phiEnd, radius);
+
+  class Tube extends THREE.Curve<THREE.Vector3> {
+    getPoint(t): THREE.Vector3 {
+      const theta = linearMap(t, 0, 1, thetaStart, thetaEnd);
+      const phi = linearMap(t, 0, 1, phiStart, phiEnd);
+      return ellipticalToCartesian(
+        1,
+        theta,
+        phi
+      );
+    }
+  }
+
+  return new THREE.TubeGeometry(new Tube, 100, radius, 100, false);
+};
+
 const createArc = (centerTheta, centerPhi, arcRadius, tubeRadius, startAngle, finishAngle): THREE.TubeGeometry => {
 
   class Arc extends THREE.Curve<THREE.Vector3> {
@@ -144,6 +164,36 @@ const createArc = (centerTheta, centerPhi, arcRadius, tubeRadius, startAngle, fi
 
   return new THREE.TubeGeometry(new Arc, 100, tubeRadius, 100, false);
 };
+
+//
+// Forehead pentagram
+//
+
+const foreheadGroup = new THREE.Group();
+
+[0,1,2,3,4].map(v => {
+  const theta = 0.75;
+  const phi = HALF_PI;
+  const r = 0.3;
+  v = v + 0.5;
+  const u = v + 2;
+  return createTube(
+    theta + (r * Math.cos(v * FIFTH_TAU)),
+    phi + (r * Math.sin(v * FIFTH_TAU)),
+    theta + (r * Math.cos(u * FIFTH_TAU)),
+    phi + (r * Math.sin(u * FIFTH_TAU)),
+    0.02
+  );
+}).map(geom => {
+  return new THREE.Mesh(
+    geom,
+    outlineMaterialDouble
+  );
+}).forEach(mesh => {
+  foreheadGroup.add(mesh);
+});
+
+scene.add(foreheadGroup);
 
 //
 // Mouth
