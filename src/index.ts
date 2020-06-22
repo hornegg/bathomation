@@ -240,9 +240,9 @@ const bottomLidRight = createArc({
 });
 
 const eyeballRight = createTube({
-  thetaStart: centerTheta,
+  thetaStart: centerTheta - 0.05,
   phiStart: centerPhi - 0.05,
-  thetaEnd: centerTheta + 0.1,
+  thetaEnd: centerTheta + 0.05,
   phiEnd: centerPhi - 0.2,
   radius: lid.radius * 0.8
 });
