@@ -43,6 +43,7 @@ document.body.appendChild( renderer.domElement );
 const skin = new THREE.MeshBasicMaterial({color: 0x333333, side: THREE.DoubleSide});
 const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
 const outlineMaterialDouble = new THREE.MeshBasicMaterial({color: 'black', side: THREE.DoubleSide});
+const redMaterial = new THREE.MeshBasicMaterial({color: 'red', side: THREE.DoubleSide});
 
 //
 // Load the geometry
@@ -158,7 +159,8 @@ const createTube = (param: TubeParameters): THREE.TubeGeometry => {
 interface ArcParameters {
   centerTheta: number;
   centerPhi: number;
-  arcRadius: number;
+  thetaRadius: number;
+  phiRadius: number;
   tubeRadius: number;
   startAngle: number;
   finishAngle: number;
@@ -171,8 +173,8 @@ const createArc = (param: ArcParameters): THREE.TubeGeometry => {
       const angle = linearMap(t, 0, 1, param.startAngle, param.finishAngle);
       return ellipticalToCartesian(
         1,
-        param.centerTheta + (param.arcRadius * Math.cos(angle)),
-        param.centerPhi + (param.arcRadius * Math.sin(angle))
+        param.centerTheta + (param.thetaRadius * Math.cos(angle)),
+        param.centerPhi + (param.phiRadius * Math.sin(angle))
       );
     }
   }
@@ -222,19 +224,32 @@ const lid = {
   radius: 0.04
 };
 
+const centerTheta = linearMap(1, 0, 2, lid.thetaStart, lid.thetaEnd);
+const centerPhi = linearMap(1, 0, 2, lid.phiStart, lid.phiEnd);
+
 const topLidRight = createTube(lid);
 
 const bottomLidRight = createArc({
-  centerTheta: linearMap(1, 0, 2, lid.thetaStart, lid.thetaEnd),
-  centerPhi: linearMap(1, 0, 2, lid.phiStart, lid.phiEnd),
-  arcRadius: 0.22,
+  centerTheta,
+  centerPhi,
+  thetaRadius: 0.22,
+  phiRadius: 0.33,
   tubeRadius: lid.radius,
   startAngle: PI,
   finishAngle: TWO_PI
 });
 
+const eyeballRight = createTube({
+  thetaStart: centerTheta,
+  phiStart: centerPhi - 0.05,
+  thetaEnd: centerTheta + 0.1,
+  phiEnd: centerPhi - 0.2,
+  radius: lid.radius * 0.8
+});
+
 const topLidLeft = topLidRight.clone().scale(-1, 1, 1);
 const bottomLidLeft = bottomLidRight.clone().scale(-1, 1, 1);
+const eyeballLeft = eyeballRight.clone().scale(-1, 1, 1);
 
 const eyesGroup = new THREE.Group();
 
@@ -244,6 +259,12 @@ const eyesGroup = new THREE.Group();
   mesh => eyesGroup.add(mesh)
 );
 
+[eyeballLeft, eyeballRight].map(
+  geom => new THREE.Mesh(geom, redMaterial)
+).forEach(
+  mesh => eyesGroup.add(mesh)
+);
+  
 scene.add(eyesGroup);
 
 //
@@ -254,7 +275,8 @@ const mouth = new THREE.Mesh(
   createArc({
     centerTheta: 0,
     centerPhi: -HALF_PI,
-    arcRadius: 0.7,
+    thetaRadius: 0.7,
+    phiRadius: 0.7,
     tubeRadius: 0.04,
     startAngle: -0.9,
     finishAngle: 0.9
