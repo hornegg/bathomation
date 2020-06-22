@@ -130,14 +130,20 @@ scene.add(hornGroup);
 // Basic shapes upon the ellipical head
 //
 
-const createTube = (thetaStart, phiStart, thetaEnd, phiEnd, radius): THREE.TubeGeometry => {
+interface TubeParameters {
+  thetaStart: number;
+  phiStart: number;
+  thetaEnd: number;
+  phiEnd: number;
+  radius: number;
+}
 
-  console.log('createTube', thetaStart, phiStart, thetaEnd, phiEnd, radius);
+const createTube = (param: TubeParameters): THREE.TubeGeometry => {
 
   class Tube extends THREE.Curve<THREE.Vector3> {
     getPoint(t): THREE.Vector3 {
-      const theta = linearMap(t, 0, 1, thetaStart, thetaEnd);
-      const phi = linearMap(t, 0, 1, phiStart, phiEnd);
+      const theta = linearMap(t, 0, 1, param.thetaStart, param.thetaEnd);
+      const phi = linearMap(t, 0, 1, param.phiStart, param.phiEnd);
       return ellipticalToCartesian(
         1,
         theta,
@@ -146,23 +152,32 @@ const createTube = (thetaStart, phiStart, thetaEnd, phiEnd, radius): THREE.TubeG
     }
   }
 
-  return new THREE.TubeGeometry(new Tube, 100, radius, 100, false);
+  return new THREE.TubeGeometry(new Tube, 100, param.radius, 100, false);
 };
 
-const createArc = (centerTheta, centerPhi, arcRadius, tubeRadius, startAngle, finishAngle): THREE.TubeGeometry => {
+interface ArcParameters {
+  centerTheta: number;
+  centerPhi: number;
+  arcRadius: number;
+  tubeRadius: number;
+  startAngle: number;
+  finishAngle: number;
+}
+
+const createArc = (param: ArcParameters): THREE.TubeGeometry => {
 
   class Arc extends THREE.Curve<THREE.Vector3> {
     getPoint(t): THREE.Vector3 {
-      const angle = linearMap(t, 0, 1, startAngle, finishAngle);
+      const angle = linearMap(t, 0, 1, param.startAngle, param.finishAngle);
       return ellipticalToCartesian(
         1,
-        centerTheta + (arcRadius * Math.cos(angle)),
-        centerPhi + (arcRadius * Math.sin(angle))
+        param.centerTheta + (param.arcRadius * Math.cos(angle)),
+        param.centerPhi + (param.arcRadius * Math.sin(angle))
       );
     }
   }
 
-  return new THREE.TubeGeometry(new Arc, 100, tubeRadius, 100, false);
+  return new THREE.TubeGeometry(new Arc, 100, param.tubeRadius, 100, false);
 };
 
 //
@@ -172,20 +187,20 @@ const createArc = (centerTheta, centerPhi, arcRadius, tubeRadius, startAngle, fi
 const foreheadGroup = new THREE.Group();
 
 [0,1,2,3,4].map(v => {
-  
+
   const theta = 0.75;
   const phi = HALF_PI;
   const r = 0.3;
   v = v + 0.5;
   const u = v + 2;
 
-  return createTube(
-    theta + (r * Math.cos(v * FIFTH_TAU)),
-    phi + (r * Math.sin(v * FIFTH_TAU)),
-    theta + (r * Math.cos(u * FIFTH_TAU)),
-    phi + (r * Math.sin(u * FIFTH_TAU)),
-    0.02
-  );
+  return createTube({
+    thetaStart: theta + (r * Math.cos(v * FIFTH_TAU)),
+    phiStart: phi + (r * Math.sin(v * FIFTH_TAU)),
+    thetaEnd: theta + (r * Math.cos(u * FIFTH_TAU)),
+    phiEnd: phi + (r * Math.sin(u * FIFTH_TAU)),
+    radius: 0.02
+  });
 
 }).map(
   geom => new THREE.Mesh(geom, outlineMaterialDouble)
@@ -199,13 +214,13 @@ scene.add(foreheadGroup);
 // Eyes
 //
 
-const topLidRight = createTube(
-  0.8,
-  0.9,
-  0.3,
-  0.9,
-  0.05
-);
+const topLidRight = createTube({
+  thetaStart: 0.8,
+  phiStart: 0.9,
+  thetaEnd: 0.3,
+  phiEnd: 0.9,
+  radius: 0.05
+});
 
 const topLidLeft = topLidRight.clone().scale(-1, 1, 1);
 
@@ -224,7 +239,14 @@ scene.add(eyesGroup);
 //
 
 const mouth = new THREE.Mesh(
-  createArc(0, -HALF_PI, 0.7, 0.04, -0.9, 0.9),
+  createArc({
+    centerTheta: 0,
+    centerPhi: -HALF_PI,
+    arcRadius: 0.7,
+    tubeRadius: 0.04,
+    startAngle: -0.9,
+    finishAngle: 0.9
+  }),
   outlineMaterialDouble
 );
 
