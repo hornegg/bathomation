@@ -7,6 +7,10 @@ const PI = Math.PI;
 const TWO_PI = 2 * PI;
 const HALF_PI = 0.5 * PI;
 
+const linearMap = (value: number, range1start: number, range1end: number, range2start: number, range2end: number): number => {
+  return range2start + (range2end - range2start) * ((value - range1start) / (range1end - range1start));
+};
+
 const headWidth = 1.5;
 const headHeight = 1;
 const headDepth = 1;
@@ -120,6 +124,37 @@ hornGroup.add(rightHorn);
 hornGroup.add(rightHornOutline);
 
 scene.add(hornGroup);
+
+//
+// Basic shapes upon the ellipical head
+//
+
+const createArc = (centerTheta, centerPhi, arcRadius, tubeRadius, startAngle, finishAngle): THREE.TubeGeometry => {
+
+  class Arc extends THREE.Curve<THREE.Vector3> {
+    getPoint(t): THREE.Vector3 {
+      const angle = linearMap(t, 0, 1, startAngle, finishAngle);
+      return ellipticalToCartesian(
+        1,
+        centerTheta + (arcRadius * Math.cos(angle)),
+        centerPhi + (arcRadius * Math.sin(angle))
+      );
+    }
+  }
+
+  return new THREE.TubeGeometry(new Arc, 100, tubeRadius, 100, false);
+};
+
+//
+// Mouth
+//
+
+const mouth = new THREE.Mesh(
+  createArc(0, -HALF_PI, 0.7, 0.04, -0.9, 0.9),
+  outlineMaterialDouble
+);
+
+scene.add(mouth);
 
 //
 // Animate
