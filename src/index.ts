@@ -71,63 +71,6 @@ const redMaterial = new THREE.MeshBasicMaterial({color: 'red', side: THREE.Doubl
 });
 
 //
-// Horns
-//
-
-const createHorn = (theta: number, phi: number, maxWidth: number, maxDepth: number, length: number, bend: number): THREE.Geometry => {
-
-  const openHorn = (u: number, v: number, vec: THREE.Vector3): void => {
-
-    const width = maxWidth * (1 - u);
-    const depth = maxDepth * (1 - u);
-    const angle = TWO_PI * v;
-
-    ellipticalToCartesian(
-      1 + (length * u),
-      theta + (width * Math.sin(angle)),
-      phi + (depth * Math.cos(angle)),
-      vec
-    );
-
-    vec = vec.applyAxisAngle(new THREE.Vector3(0, 0, 1), bend * length * u);
-  }; 
-
-  const horn = new THREE.ParametricGeometry(openHorn, 10, 10);
-
-  return horn;
-};
-
-const leftHorn = new THREE.Mesh(
-  createHorn(HALF_PI, (5/8) * PI, 0.15, 0.1, 1, 0.2),
-  skin
-);
-
-const om = 1.4; // Outline multiplier
-
-const leftHornOutline = new THREE.Mesh(
-  createHorn(HALF_PI, (5/8) * PI, 0.15 * om, 0.1 * om, 1.2, 0.2),
-  outlineMaterial
-);
-
-const rightHorn = new THREE.Mesh(
-  createHorn(HALF_PI, (3/8) * PI, 0.15, 0.1, 1, -0.2),
-  skin
-);
-
-const rightHornOutline = new THREE.Mesh(
-  createHorn(HALF_PI, (3/8) * PI, 0.15 * om, 0.1 * om, 1.2, -0.2),
-  outlineMaterial
-);
-
-const hornGroup = new THREE.Group();
-hornGroup.add(leftHorn);
-hornGroup.add(leftHornOutline);
-hornGroup.add(rightHorn);
-hornGroup.add(rightHornOutline);
-
-scene.add(hornGroup);
-
-//
 // Basic shapes upon the ellipical head
 //
 
@@ -181,6 +124,100 @@ const createArc = (param: ArcParameters): THREE.TubeGeometry => {
 
   return new THREE.TubeGeometry(new Arc, 100, param.tubeRadius, 100, false);
 };
+
+//
+// Horns
+//
+
+interface HornParameters {
+  theta: number;
+  phi: number;
+  maxWidth: number;
+  maxDepth: number;
+  length: number;
+  bend: number;
+}
+
+const createHorn = (param: HornParameters): THREE.Geometry => {
+
+  const openHorn = (u: number, v: number, vec: THREE.Vector3): void => {
+
+    const width = param.maxWidth * (1 - u);
+    const depth = param.maxDepth * (1 - u);
+    const angle = TWO_PI * v;
+
+    ellipticalToCartesian(
+      1 + (param.length * u),
+      param.theta + (width * Math.sin(angle)),
+      param.phi + (depth * Math.cos(angle)),
+      vec
+    );
+
+    vec = vec.applyAxisAngle(new THREE.Vector3(0, 0, 1), param.bend * param.length * u);
+  }; 
+
+  const horn = new THREE.ParametricGeometry(openHorn, 10, 10);
+
+  return horn;
+};
+
+const leftHorn = new THREE.Mesh(
+  createHorn({
+    theta: HALF_PI,
+    phi: (5/8) * PI,
+    maxWidth: 0.15,
+    maxDepth: 0.1,
+    length: 1,
+    bend: 0.2
+  }),
+  skin
+);
+
+const om = 1.4; // Outline multiplier
+
+const leftHornOutline = new THREE.Mesh(
+  createHorn({
+    theta: HALF_PI,
+    phi: (5/8) * PI,
+    maxWidth: 0.15 * om,
+    maxDepth: 0.1 * om,
+    length: 1.2,
+    bend: 0.2
+  }),
+  outlineMaterial
+);
+
+const rightHorn = new THREE.Mesh(
+  createHorn({
+    theta: HALF_PI,
+    phi: (3/8) * PI,
+    maxWidth: 0.15,
+    maxDepth: 0.1,
+    length: 1,
+    bend: -0.2
+  }),
+  skin
+);
+
+const rightHornOutline = new THREE.Mesh(
+  createHorn({
+    theta: HALF_PI, 
+    phi: (3/8) * PI,
+    maxWidth: 0.15 * om,
+    maxDepth: 0.1 * om,
+    length: 1.2,
+    bend: -0.2
+  }),
+  outlineMaterial
+);
+
+const hornGroup = new THREE.Group();
+hornGroup.add(leftHorn);
+hornGroup.add(leftHornOutline);
+hornGroup.add(rightHorn);
+hornGroup.add(rightHornOutline);
+
+scene.add(hornGroup);
 
 //
 // Forehead pentagram
