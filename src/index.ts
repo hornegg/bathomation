@@ -71,6 +71,26 @@ const redMaterial = new THREE.MeshBasicMaterial({color: 'red', side: THREE.Doubl
 });
 
 //
+// createCylinder - I find a tube easier to use than CylinderGeometry
+//
+
+const createCylinder = (start: THREE.Vector3, finish: THREE.Vector3, width: number): THREE.TubeGeometry => {
+
+  class Tube extends THREE.Curve<THREE.Vector3> {
+    getPoint(t): THREE.Vector3 {
+      return new THREE.Vector3(
+        linearMap(t, 0, 1, start.x, finish.x),
+        linearMap(t, 0, 1, start.y, finish.y),
+        linearMap(t, 0, 1, start.z, finish.z)
+      );
+    }
+  }
+
+  return new THREE.TubeGeometry(new Tube, 1, width);
+
+};
+
+//
 // Basic shapes upon the ellipical head
 //
 
@@ -241,6 +261,27 @@ hornGroup.add(
 );
 
 scene.add(hornGroup);
+
+//
+// Antenna
+//
+
+const antenna = new THREE.Group();
+
+const antennaBase = createCylinder(
+  new THREE.Vector3(0, headHeight, 0),
+  new THREE.Vector3(0.3, headHeight + 1, 0),
+  0.06
+);
+
+antenna.add(
+  new THREE.Mesh(
+    antennaBase,
+    outlineMaterialDouble
+  )
+);
+
+scene.add(antenna);
 
 //
 // Forehead pentagram
