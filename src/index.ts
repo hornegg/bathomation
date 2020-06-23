@@ -328,6 +328,36 @@ const eyesGroup = new THREE.Group();
 scene.add(eyesGroup);
 
 //
+// Nose
+//
+
+const nose = new THREE.Group();
+
+const thetaRadius = 0.2;
+const phiRadius = 0.5;
+
+const noseParams = {
+  centerTheta: 0.2 + thetaRadius,
+  centerPhi: -1.48 + phiRadius,
+  thetaRadius,
+  phiRadius,
+  tubeRadius: 0.04,
+  startAngle: HALF_PI + 0.9,
+  finishAngle: PI + HALF_PI - 0.5
+};
+
+const noseLeft = createArc(noseParams);
+const noseRight = noseLeft.clone().scale(-1, 1, 1);
+
+[noseLeft, noseRight].map(
+  geom => new THREE.Mesh(geom, outlineMaterialDouble)
+).forEach(
+  mesh => nose.add(mesh)
+);
+  
+scene.add(nose);
+
+//
 // Mouth
 //
 
