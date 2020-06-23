@@ -161,52 +161,48 @@ const createHorn = (param: HornParameters): THREE.Geometry => {
   return horn;
 };
 
-const leftHorn = new THREE.Mesh(
-  createHorn({
-    theta: HALF_PI,
-    phi: (5/8) * PI,
-    maxWidth: 0.15,
-    maxDepth: 0.1,
-    length: 1,
-    bend: 0.2
-  }),
-  skin
-);
+const horn = {
+  theta: HALF_PI,
+  phi: (5/8) * PI,
+  maxWidth: 0.15,
+  maxDepth: 0.1,
+  length: 1,
+  bend: 0.2
+};
 
 const om = 1.4; // Outline multiplier
 
+const hornOutline = {
+  ...horn,
+  maxWidth: horn.maxWidth * om,
+  maxDepth: horn.maxDepth * om,
+  length: 1.2
+};
+
+const leftHorn = new THREE.Mesh(
+  createHorn(horn),
+  skin
+);
+
 const leftHornOutline = new THREE.Mesh(
-  createHorn({
-    theta: HALF_PI,
-    phi: (5/8) * PI,
-    maxWidth: 0.15 * om,
-    maxDepth: 0.1 * om,
-    length: 1.2,
-    bend: 0.2
-  }),
+  createHorn(hornOutline),
   outlineMaterial
 );
 
 const rightHorn = new THREE.Mesh(
   createHorn({
-    theta: HALF_PI,
+    ...horn,
     phi: (3/8) * PI,
-    maxWidth: 0.15,
-    maxDepth: 0.1,
-    length: 1,
-    bend: -0.2
+    bend: -horn.bend
   }),
   skin
 );
 
 const rightHornOutline = new THREE.Mesh(
   createHorn({
-    theta: HALF_PI, 
+    ...hornOutline,
     phi: (3/8) * PI,
-    maxWidth: 0.15 * om,
-    maxDepth: 0.1 * om,
-    length: 1.2,
-    bend: -0.2
+    bend: -horn.bend
   }),
   outlineMaterial
 );
