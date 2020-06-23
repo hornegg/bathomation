@@ -207,11 +207,38 @@ const rightHornOutline = new THREE.Mesh(
   outlineMaterial
 );
 
+const hornRing = {
+  centerTheta: horn.theta,
+  centerPhi: horn.phi,
+  thetaRadius: horn.maxWidth,
+  phiRadius: horn.maxDepth,
+  tubeRadius: 0.07,
+  startAngle: 0,
+  finishAngle: TWO_PI
+};
+
 const hornGroup = new THREE.Group();
 hornGroup.add(leftHorn);
 hornGroup.add(leftHornOutline);
 hornGroup.add(rightHorn);
 hornGroup.add(rightHornOutline);
+
+hornGroup.add(
+  new THREE.Mesh(
+    createArc(hornRing),
+    outlineMaterialDouble
+  ),
+);
+
+hornGroup.add(
+  new THREE.Mesh(
+    createArc({
+      ...hornRing,
+      centerPhi: (3/8) * PI,
+    }),
+    outlineMaterialDouble
+  ),
+);
 
 scene.add(hornGroup);
 
