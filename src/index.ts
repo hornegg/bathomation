@@ -3,29 +3,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import FrameTimingTool from './FrameTimingTool';
 
-const PI = Math.PI;
-const TWO_PI = 2 * PI;
-const HALF_PI = 0.5 * PI;
-const FIFTH_TAU = TWO_PI / 5;
+import {
+  ellipticalToCartesian, TWO_PI, HALF_PI, PI, createArc, linearMap, headHeight, skin, outlineMaterial, outlineMaterialDouble, redMaterial
+} from './common';
 
-const linearMap = (value: number, range1start: number, range1end: number, range2start: number, range2end: number): number => {
-  return range2start + (range2end - range2start) * ((value - range1start) / (range1end - range1start));
-};
-
-const headWidth = 1.5;
-const headHeight = 1;
-const headDepth = 1;
-
-const ellipticalToCartesian = (r: number, theta: number, phi: number, vec?: THREE.Vector3): THREE.Vector3 => {
-
-  vec = vec ? vec : new THREE.Vector3();
-
-  return vec.set(
-    r * headWidth * Math.sin(theta) * Math.cos(phi),
-    r * headHeight * Math.sin(theta) * Math.sin(phi),
-    r * headDepth * Math.cos(theta)
-  );
-};
+import {createFace} from './face';
 
 //
 // Set up the scene
@@ -39,11 +21,6 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
 document.body.appendChild( renderer.domElement );
-
-const skin = new THREE.MeshBasicMaterial({color: 0x333333, side: THREE.DoubleSide});
-const outlineMaterial = new THREE.MeshBasicMaterial({color: 'black', side: THREE.BackSide});
-const outlineMaterialDouble = new THREE.MeshBasicMaterial({color: 'black', side: THREE.DoubleSide});
-const redMaterial = new THREE.MeshBasicMaterial({color: 'red', side: THREE.DoubleSide});
 
 //
 // Load the geometry
@@ -69,61 +46,6 @@ const redMaterial = new THREE.MeshBasicMaterial({color: 'red', side: THREE.Doubl
   scene.add(headOutline);
 
 });
-
-//
-// Basic shapes upon the ellipical head
-//
-
-interface TubeParameters {
-  thetaStart: number;
-  phiStart: number;
-  thetaEnd: number;
-  phiEnd: number;
-  radius: number;
-}
-
-const createTube = (param: TubeParameters): THREE.TubeGeometry => {
-
-  class Tube extends THREE.Curve<THREE.Vector3> {
-    getPoint(t): THREE.Vector3 {
-      const theta = linearMap(t, 0, 1, param.thetaStart, param.thetaEnd);
-      const phi = linearMap(t, 0, 1, param.phiStart, param.phiEnd);
-      return ellipticalToCartesian(
-        1,
-        theta,
-        phi
-      );
-    }
-  }
-
-  return new THREE.TubeGeometry(new Tube, 100, param.radius, 100, false);
-};
-
-interface ArcParameters {
-  centerTheta: number;
-  centerPhi: number;
-  thetaRadius: number;
-  phiRadius: number;
-  tubeRadius: number;
-  startAngle: number;
-  finishAngle: number;
-}
-
-const createArc = (param: ArcParameters): THREE.TubeGeometry => {
-
-  class Arc extends THREE.Curve<THREE.Vector3> {
-    getPoint(t): THREE.Vector3 {
-      const angle = linearMap(t, 0, 1, param.startAngle, param.finishAngle);
-      return ellipticalToCartesian(
-        1,
-        param.centerTheta + (param.thetaRadius * Math.cos(angle)),
-        param.centerPhi + (param.phiRadius * Math.sin(angle))
-      );
-    }
-  }
-
-  return new THREE.TubeGeometry(new Arc, 100, param.tubeRadius, 100, false);
-};
 
 //
 // Horns
@@ -309,139 +231,7 @@ antenna.add(
 
 scene.add(antenna);
 
-//
-// Forehead pentagram
-//
-
-const foreheadGroup = new THREE.Group();
-
-[0,1,2,3,4].map(v => {
-
-  const theta = 0.75;
-  const phi = HALF_PI;
-  const r = 0.3;
-  v = v + 0.5;
-  const u = v + 2;
-
-  return createTube({
-    thetaStart: theta + (r * Math.cos(v * FIFTH_TAU)),
-    phiStart: phi + (r * Math.sin(v * FIFTH_TAU)),
-    thetaEnd: theta + (r * Math.cos(u * FIFTH_TAU)),
-    phiEnd: phi + (r * Math.sin(u * FIFTH_TAU)),
-    radius: 0.02
-  });
-
-}).map(
-  geom => new THREE.Mesh(geom, outlineMaterialDouble)
-).forEach(
-  mesh => foreheadGroup.add(mesh)
-);
-
-scene.add(foreheadGroup);
-
-//
-// Eyes
-//
-
-const lid = {
-  thetaStart: 0.8,
-  phiStart: 0.9,
-  thetaEnd: 0.3,
-  phiEnd: 0.9,
-  radius: 0.04
-};
-
-const centerTheta = linearMap(1, 0, 2, lid.thetaStart, lid.thetaEnd);
-const centerPhi = linearMap(1, 0, 2, lid.phiStart, lid.phiEnd);
-
-const topLidRight = createTube(lid);
-
-const bottomLidRight = createArc({
-  centerTheta,
-  centerPhi,
-  thetaRadius: 0.22,
-  phiRadius: 0.33,
-  tubeRadius: lid.radius,
-  startAngle: PI,
-  finishAngle: TWO_PI
-});
-
-const eyeballRight = createTube({
-  thetaStart: centerTheta - 0.05,
-  phiStart: centerPhi - 0.05,
-  thetaEnd: centerTheta + 0.05,
-  phiEnd: centerPhi - 0.2,
-  radius: lid.radius * 0.8
-});
-
-const topLidLeft = topLidRight.clone().scale(-1, 1, 1);
-const bottomLidLeft = bottomLidRight.clone().scale(-1, 1, 1);
-const eyeballLeft = eyeballRight.clone().scale(-1, 1, 1);
-
-const eyesGroup = new THREE.Group();
-
-[topLidLeft, topLidRight, bottomLidLeft, bottomLidRight].map(
-  geom => new THREE.Mesh(geom, outlineMaterialDouble)
-).forEach(
-  mesh => eyesGroup.add(mesh)
-);
-
-[eyeballLeft, eyeballRight].map(
-  geom => new THREE.Mesh(geom, redMaterial)
-).forEach(
-  mesh => eyesGroup.add(mesh)
-);
-  
-scene.add(eyesGroup);
-
-//
-// Nose
-//
-
-const nose = new THREE.Group();
-
-const thetaRadius = 0.2;
-const phiRadius = 0.5;
-
-const noseParams = {
-  centerTheta: 0.2 + thetaRadius,
-  centerPhi: -1.48 + phiRadius,
-  thetaRadius,
-  phiRadius,
-  tubeRadius: 0.04,
-  startAngle: HALF_PI + 0.9,
-  finishAngle: PI + HALF_PI - 0.5
-};
-
-const noseLeft = createArc(noseParams);
-const noseRight = noseLeft.clone().scale(-1, 1, 1);
-
-[noseLeft, noseRight].map(
-  geom => new THREE.Mesh(geom, outlineMaterialDouble)
-).forEach(
-  mesh => nose.add(mesh)
-);
-  
-scene.add(nose);
-
-//
-// Mouth
-//
-
-const mouth = new THREE.Mesh(
-  createArc({
-    centerTheta: 0,
-    centerPhi: -HALF_PI,
-    thetaRadius: 0.7,
-    phiRadius: 0.7,
-    tubeRadius: 0.04,
-    startAngle: -0.9,
-    finishAngle: 0.9
-  }),
-  outlineMaterialDouble
-);
-
-scene.add(mouth);
+scene.add(createFace());
 
 //
 // Animate
