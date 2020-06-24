@@ -71,26 +71,6 @@ const redMaterial = new THREE.MeshBasicMaterial({color: 'red', side: THREE.Doubl
 });
 
 //
-// createCylinder - I find a tube easier to use than CylinderGeometry
-//
-
-const createCylinder = (start: THREE.Vector3, finish: THREE.Vector3, width: number): THREE.TubeGeometry => {
-
-  class Tube extends THREE.Curve<THREE.Vector3> {
-    getPoint(t): THREE.Vector3 {
-      return new THREE.Vector3(
-        linearMap(t, 0, 1, start.x, finish.x),
-        linearMap(t, 0, 1, start.y, finish.y),
-        linearMap(t, 0, 1, start.z, finish.z)
-      );
-    }
-  }
-
-  return new THREE.TubeGeometry(new Tube, 1, width);
-
-};
-
-//
 // Basic shapes upon the ellipical head
 //
 
@@ -266,18 +246,64 @@ scene.add(hornGroup);
 // Antenna
 //
 
-const antenna = new THREE.Group();
+const createAntenna = (beginning: THREE.Vector3, middle: THREE.Vector3, end: THREE.Vector3, width: number): THREE.TubeGeometry => {
 
-const antennaBase = createCylinder(
+  class Tube extends THREE.Curve<THREE.Vector3> {
+    getPoint(t): THREE.Vector3 {
+      if (t < 0.5) {
+        return new THREE.Vector3(
+          linearMap(t, 0, 0.5, beginning.x, middle.x),
+          linearMap(t, 0, 0.5, beginning.y, middle.y),
+          linearMap(t, 0, 0.5, beginning.z, middle.z)
+        );
+      } else {
+        return new THREE.Vector3(
+          linearMap(t, 0.5, 1, middle.x, end.x),
+          linearMap(t, 0.5, 1, middle.y, end.y),
+          linearMap(t, 0.5, 1, middle.z, end.z)
+        );
+      }
+    }
+  }
+
+  return new THREE.TubeGeometry(new Tube, 20, width);
+
+};
+
+const antenna = new THREE.Group();
+const antennaPosition = new THREE.Vector3(1, headHeight + 0.8, 0);
+const antennaSize = 0.2;
+
+const antennaPole = createAntenna(
   new THREE.Vector3(0, headHeight, 0),
   new THREE.Vector3(0.3, headHeight + 1, 0),
-  0.06
+  antennaPosition,
+  0.05
+);
+
+const antennaDot = new THREE.SphereGeometry(antennaSize, 12, 12);
+const antennaOutline = new THREE.SphereGeometry(antennaSize * om, 12, 12);
+antennaDot.translate(antennaPosition.x, antennaPosition.y, antennaPosition.z);
+antennaOutline.translate(antennaPosition.x, antennaPosition.y, antennaPosition.z);
+
+antenna.add(
+  new THREE.Mesh(
+    antennaPole,
+    outlineMaterialDouble
+  )
 );
 
 antenna.add(
   new THREE.Mesh(
-    antennaBase,
-    outlineMaterialDouble
+    antennaDot,
+    redMaterial
+  )
+);
+
+antenna.add(
+  new THREE.Mesh(
+    antennaOutline,
+    outlineMaterial
   )
 );
 
