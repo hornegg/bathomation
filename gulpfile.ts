@@ -3,20 +3,29 @@ import * as fs from 'fs';
 
 import * as gulp from 'gulp';
 
-const runChangedScript = (src: string, dest: string, args: string[]): void => {
+interface RunChangedScriptParams {
+  src: string;
+  dest: string;
+  args: string[];
+  additionalDependencies: string[];
+}
+
+const runChangedScript = (params: RunChangedScriptParams): void => {
 
   let ignoreInitial = false;
 
-  if (fs.existsSync(dest)) {
-    const srcStat = fs.statSync(src);
-    const destStat = fs.statSync(dest);
+  if (fs.existsSync(params.dest)) {
+    const srcStat = fs.statSync(params.src);
+    const destStat = fs.statSync(params.dest);
 
     ignoreInitial = destStat.mtime > srcStat.mtime;
   }
 
-  gulp.watch(src, {ignoreInitial}, (callback): void => {
+  const depends = [params.src, ...params.additionalDependencies];
 
-    const script = spawn('node_modules\\.bin\\ts-node.cmd', [src, dest, ...args]);
+  gulp.watch(depends, {ignoreInitial}, (callback): void => {
+
+    const script = spawn('node_modules\\.bin\\ts-node.cmd', [params.src, params.dest, ...params.args]);
 
     script.stdout.on('data', (data) => {
       console.log(data.toString());
@@ -36,8 +45,43 @@ const runChangedScript = (src: string, dest: string, args: string[]): void => {
 
 const defaultTask = (): void => {
 
-  runChangedScript('model/headGeometry.ts', 'dist/headGeometry.json', ['false', 'dist/bodyGeometry.json']);
-  runChangedScript('model/headGeometry.ts', 'dist/outlineHeadGeometry.json', ['true', 'dist/outlineBodyGeometry.json']);
+  runChangedScript({
+    src: 'model/headGeometry.ts',
+    dest: 'dist/headGeometry.json',
+    args: ['false'],
+    additionalDependencies: [
+      'model/commonGeometry.ts'
+    ]
+  });
+
+  runChangedScript({
+    src: 'model/headGeometry.ts',
+    dest: 'dist/outlineHeadGeometry.json',
+    args: ['true'],
+    additionalDependencies: [
+      'model/commonGeometry.ts'
+    ]
+  });
+
+  runChangedScript({
+    src: 'model/bodyGeometry.ts',
+    dest: 'dist/bodyGeometry.json',
+    args: ['false'],
+    additionalDependencies: [
+      'model/commonGeometry.ts',
+      'dist/outlineHeadGeometry.json'
+    ]
+  });
+
+  runChangedScript({
+    src: 'model/bodyGeometry.ts',
+    dest: 'dist/outlineBodyGeometry.json',
+    args: ['true'],
+    additionalDependencies: [
+      'model/commonGeometry.ts',
+      'dist/outlineHeadGeometry.json'
+    ]
+  });
 
 };
 
