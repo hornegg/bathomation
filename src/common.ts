@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { BufferGeometry } from 'three';
 
 export const PI = Math.PI;
 export const TWO_PI = 2 * PI;
@@ -85,5 +86,23 @@ export const createArc = (param: ArcParameters): THREE.TubeGeometry => {
   }
 
   return new THREE.TubeGeometry(new Arc, 100, param.tubeRadius, 100, false);
+};
+
+//
+// loadGeometry
+//
+
+export const loadGeometry = (filename: string): Promise<BufferGeometry> => {
+
+  return new Promise((resolve, reject) => {
+
+    (new THREE.BufferGeometryLoader()).load(
+      filename,
+      (geometry) => resolve(geometry),
+      null,
+      (error: ErrorEvent) => reject(error)
+    );
+
+  });
 };
 

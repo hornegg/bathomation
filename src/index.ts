@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import FrameTimingTool from './FrameTimingTool';
-import {createHead} from './head';
+import { createHead } from './head';
+import { skin, loadGeometry, outlineMaterial } from './common';
 
 //
 // Set up the scene
@@ -24,6 +25,32 @@ document.body.appendChild( renderer.domElement );
 createHead().then(head => {
   scene.add(head);
 });
+
+//
+// Body
+//
+
+loadGeometry('bodyGeometry.json').then(
+  (geometry) => {
+    scene.add(
+      new THREE.Mesh(
+        geometry,
+        skin
+      )
+    );
+  }
+);
+
+loadGeometry('outlineBodyGeometry.json').then(
+  (geometry) => {
+    scene.add(
+      new THREE.Mesh(
+        geometry,
+        outlineMaterial
+      )
+    );
+  }
+);
 
 //
 // Animate

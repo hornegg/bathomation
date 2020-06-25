@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
 import {
-  ellipticalToCartesian, TWO_PI, HALF_PI, PI, createArc, linearMap, headHeight, skin, outlineMaterial, outlineMaterialDouble, redMaterial
+  ellipticalToCartesian, TWO_PI, HALF_PI, PI, createArc, linearMap, headHeight, skin, outlineMaterial, outlineMaterialDouble, redMaterial,
+  loadGeometry
 } from './common';
 
 import {createFace} from './face';
@@ -13,44 +14,20 @@ export const createHead = async (): Promise<THREE.Group> => {
   //
   // Load the geometry
   //
-  const headMesh: THREE.Mesh = await new Promise((resolve, reject) => {
 
-    (new THREE.BufferGeometryLoader()).load(
-      'headGeometry.json',
-      (geometry) => {
-        resolve(
-          new THREE.Mesh(
-            geometry,
-            skin
-          )
-        );
-      },
-      null,
-      (error: ErrorEvent) => reject(error)
-    );
+  head.add(
+    new THREE.Mesh(
+      await loadGeometry('headGeometry.json'),
+      skin
+    )
+  );
 
-  });
-
-  const headOutlineMesh: THREE.Mesh = await new Promise((resolve, reject) => {
-
-    (new THREE.BufferGeometryLoader()).load(
-      'outlineHeadGeometry.json',
-      (geometry) => {
-        resolve(
-          new THREE.Mesh(
-            geometry,
-            outlineMaterial
-          )
-        );
-      },
-      null,
-      (error: ErrorEvent) => reject(error)
-    );
-
-  });
-
-  head.add(headMesh);  
-  head.add(headOutlineMesh);  
+  head.add(
+    new THREE.Mesh(
+      await loadGeometry('outlineHeadGeometry.json'),
+      outlineMaterial
+    )
+  );  
 
   //
   // Horns

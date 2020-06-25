@@ -6,6 +6,7 @@ const ThreeBSP = require('three-js-csg')(THREE);
 
 const outfilename = process.argv[2];
 const outline = (process.argv[3] === 'true');
+const bodyFilename = process.argv[4];
 
 console.log('building headGeometry', {outline});
 
@@ -46,11 +47,36 @@ const geometry: THREE.Geometry = headBsp
 .subtract(rightIntersect)
 .toGeometry();
 
-fs.writeFileSync(outfilename, JSON.stringify(
-  (new THREE.BufferGeometry()).fromGeometry(geometry).toJSON(),
-  null,
-  2
-));
+fs.writeFileSync(
+  outfilename,
+  JSON.stringify(
+    (new THREE.BufferGeometry()).fromGeometry(geometry).toJSON(),
+    null,
+    2
+  )
+);
+
+const bodyEllipsoid = createEllipsoid(0.75, 1.8, 0.5, scalar);
+bodyEllipsoid.translate(0, -1.3, 0);
+const bodyEllipsoidBsp = new ThreeBSP(bodyEllipsoid);
+
+const headBox = new THREE.BoxGeometry(2, 2, 2);
+headBox.translate(0, 1.5, 0);
+const headBoxBsp = new ThreeBSP(headBox);
+
+const body: THREE.Geometry = bodyEllipsoidBsp
+.subtract(headBoxBsp)
+.subtract(headBsp)
+.toGeometry();
+
+fs.writeFileSync(
+  bodyFilename,
+  JSON.stringify(
+    (new THREE.BufferGeometry()).fromGeometry(body).toJSON(),
+    null,
+    2
+  )
+);
 
 console.log(`${outfilename} done`);
 

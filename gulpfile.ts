@@ -36,8 +36,8 @@ const runChangedScript = (src: string, dest: string, args: string[]): void => {
 
 const defaultTask = (): void => {
 
-  runChangedScript('model/headGeometry.ts', 'dist/headGeometry.json', ['false']);
-  runChangedScript('model/headGeometry.ts', 'dist/outlineHeadGeometry.json', ['true']);
+  runChangedScript('model/headGeometry.ts', 'dist/headGeometry.json', ['false', 'dist/bodyGeometry.json']);
+  runChangedScript('model/headGeometry.ts', 'dist/outlineHeadGeometry.json', ['true', 'dist/outlineBodyGeometry.json']);
 
 };
 
