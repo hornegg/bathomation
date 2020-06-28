@@ -45,6 +45,8 @@ const runChangedScript = (params: RunChangedScriptParams): void => {
 
 const defaultTask = (): void => {
 
+  // head
+
   runChangedScript({
     src: 'model/headGeometry.ts',
     dest: 'dist/headGeometry.json',
@@ -63,6 +65,8 @@ const defaultTask = (): void => {
     ]
   });
 
+  // body
+
   runChangedScript({
     src: 'model/bodyGeometry.ts',
     dest: 'dist/bodyGeometry.json',
@@ -80,6 +84,50 @@ const defaultTask = (): void => {
     additionalDependencies: [
       'model/commonGeometry.ts',
       'dist/outlineHeadGeometry.json'
+    ]
+  });
+
+  // left foot
+
+  runChangedScript({
+    src: 'model/footGeometry.ts',
+    dest: 'dist/leftFootGeometry.json',
+    args: ['false', 'true'],
+    additionalDependencies: [
+      'model/commonGeometry.ts',
+      'dist/outlineBodyGeometry.json'
+    ]
+  });
+
+  runChangedScript({
+    src: 'model/footGeometry.ts',
+    dest: 'dist/outlineLeftFootGeometry.json',
+    args: ['true', 'true'],
+    additionalDependencies: [
+      'model/commonGeometry.ts',
+      'dist/outlineBodyGeometry.json'
+    ]
+  });
+
+  // right foot
+
+  runChangedScript({
+    src: 'model/footGeometry.ts',
+    dest: 'dist/rightFootGeometry.json',
+    args: ['false', 'false'],
+    additionalDependencies: [
+      'model/commonGeometry.ts',
+      'dist/outlineBodyGeometry.json'
+    ]
+  });
+
+  runChangedScript({
+    src: 'model/footGeometry.ts',
+    dest: 'dist/outlineRightFootGeometry.json',
+    args: ['true', 'false'],
+    additionalDependencies: [
+      'model/commonGeometry.ts',
+      'dist/outlineBodyGeometry.json'
     ]
   });
 

@@ -30,27 +30,27 @@ createHead().then(head => {
 // Body
 //
 
-loadGeometry('bodyGeometry.json').then(
-  (geometry) => {
-    scene.add(
-      new THREE.Mesh(
-        geometry,
-        skin
-      )
-    );
-  }
-);
+const addMesh = (geometryFile: string, material: THREE.Material): void => {
 
-loadGeometry('outlineBodyGeometry.json').then(
-  (geometry) => {
-    scene.add(
-      new THREE.Mesh(
-        geometry,
-        outlineMaterial
-      )
-    );
-  }
-);
+  loadGeometry(geometryFile).then(
+    (geometry) => {
+      scene.add(
+        new THREE.Mesh(
+          geometry,
+          material
+        )
+      );
+    }
+  );
+  
+};
+
+addMesh('bodyGeometry.json', skin);
+addMesh('outlineBodyGeometry.json', outlineMaterial);
+addMesh('leftFootGeometry.json', skin);
+addMesh('outlineLeftFootGeometry.json', outlineMaterial);
+addMesh('rightFootGeometry.json', skin);
+addMesh('outlineRightFootGeometry.json', outlineMaterial);
 
 //
 // Animate
