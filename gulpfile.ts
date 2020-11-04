@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as gulp from 'gulp';
 
 interface RunChangedScriptParams {
+  displayName: string;
   src: string;
   dest: string;
   args: string[];
@@ -23,7 +24,7 @@ const runChangedScript = (params: RunChangedScriptParams): void => {
 
   const depends = [params.src, ...params.additionalDependencies];
 
-  gulp.watch(depends, {ignoreInitial}, (callback): void => {
+  const task = (callback): void => {
 
     const script = spawn('node_modules\\.bin\\ts-node.cmd', [params.src, params.dest, ...params.args]);
 
@@ -39,8 +40,12 @@ const runChangedScript = (params: RunChangedScriptParams): void => {
       callback(code ?  new Error('Script return code non-zero') : undefined);
     });
 
-  });
+  }; 
 
+  task.displayName = params.displayName;
+
+  gulp.watch(depends, {ignoreInitial}, task);
+  
 };
 
 const defaultTask = (): void => {
@@ -48,6 +53,7 @@ const defaultTask = (): void => {
   // head
 
   runChangedScript({
+    displayName: 'headGeometry',
     src: 'model/headGeometry.ts',
     dest: 'dist/headGeometry.json',
     args: ['false'],
@@ -57,6 +63,7 @@ const defaultTask = (): void => {
   });
 
   runChangedScript({
+    displayName: 'outlineHeadGeometry',
     src: 'model/headGeometry.ts',
     dest: 'dist/outlineHeadGeometry.json',
     args: ['true'],
@@ -68,6 +75,7 @@ const defaultTask = (): void => {
   // body
 
   runChangedScript({
+    displayName: 'bodyGeometry',
     src: 'model/bodyGeometry.ts',
     dest: 'dist/bodyGeometry.json',
     args: ['false'],
@@ -78,6 +86,7 @@ const defaultTask = (): void => {
   });
 
   runChangedScript({
+    displayName: 'outlineBodyGeometry',
     src: 'model/bodyGeometry.ts',
     dest: 'dist/outlineBodyGeometry.json',
     args: ['true'],
@@ -90,6 +99,7 @@ const defaultTask = (): void => {
   // left foot
 
   runChangedScript({
+    displayName: 'leftFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/leftFootGeometry.json',
     args: ['false', 'true'],
@@ -100,6 +110,7 @@ const defaultTask = (): void => {
   });
 
   runChangedScript({
+    displayName: 'outlineLeftFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/outlineLeftFootGeometry.json',
     args: ['true', 'true'],
@@ -112,6 +123,7 @@ const defaultTask = (): void => {
   // right foot
 
   runChangedScript({
+    displayName: 'rightFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/rightFootGeometry.json',
     args: ['false', 'false'],
@@ -122,6 +134,7 @@ const defaultTask = (): void => {
   });
 
   runChangedScript({
+    displayName: 'outlineRightFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/outlineRightFootGeometry.json',
     args: ['true', 'false'],

@@ -9,8 +9,6 @@ import { createEllipsoid } from './commonGeometry';
 const outfilename = process.argv[2];
 const outline = (process.argv[3] === 'true');
 
-console.log('building bodyGeometry', {outline});
-
 const scalar = outline ? 0.07 : 0;
 
 const bodyEllipsoid = createEllipsoid(0.75, 1.8, 0.5, scalar);
@@ -48,6 +46,4 @@ fs.writeFileSync(
     2
   )
 );
-
-console.log(`${outfilename} done`);
 

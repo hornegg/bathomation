@@ -10,8 +10,6 @@ const outfilename = process.argv[2];
 const outline = (process.argv[3] === 'true');
 const left = (process.argv[4] === 'true');
 
-console.log('building footGeometry', {outline, left});
-
 const scalar = outline ? 0.07 : 0;
 
 const radius = 0.25;
@@ -44,6 +42,4 @@ fs.writeFileSync(
     2
   )
 );
-
-console.log(`${outfilename} done`);
 
