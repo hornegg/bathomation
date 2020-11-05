@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-
 import * as fs from 'fs';
 import * as THREE from 'three';
-const ThreeBSP = require('three-js-csg')(THREE);
+import * as bspConstructor from 'three-js-csg';
 
 import { createEllipsoid } from './commonGeometry';
+
+const ThreeBSP = bspConstructor(THREE);
 
 const outfilename = process.argv[2];
 const outline = (process.argv[3] === 'true');
