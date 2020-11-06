@@ -17,12 +17,12 @@ const floorLevel = -3.1;
 
 const footRatio = 1.75;
 const footEllipsoid = createEllipsoid(radius, radius, radius * footRatio, scalar);
-const footCenterX = left ? -0.95 : 0.95;
+const footCenterX = left ? -0.85 : 0.85;
 
 footEllipsoid.translate(
   footCenterX,
   floorLevel,
-  0
+  radius
 );
 
 const footEllipsoidBsp = new ThreeBSP(footEllipsoid);

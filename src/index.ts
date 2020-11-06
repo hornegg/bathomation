@@ -19,6 +19,8 @@ renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
 document.body.appendChild( renderer.domElement );
 
 const bodyGroup = new THREE.Group();
+const leftFootGroup = new THREE.Group();
+const rightFootGroup = new THREE.Group();
 
 //
 // Add the head
@@ -46,13 +48,14 @@ const addMesh = async (geometryFile: string, material: THREE.Material, parent: T
 
 addMesh('bodyGeometry.json', skin, bodyGroup);
 addMesh('outlineBodyGeometry.json', outlineMaterial, bodyGroup);
-
-addMesh('leftFootGeometry.json', skin, scene);
-addMesh('outlineLeftFootGeometry.json', outlineMaterial, scene);
-addMesh('rightFootGeometry.json', skin, scene);
-addMesh('outlineRightFootGeometry.json', outlineMaterial, scene);
+addMesh('leftFootGeometry.json', skin, leftFootGroup);
+addMesh('outlineLeftFootGeometry.json', outlineMaterial, leftFootGroup);
+addMesh('rightFootGeometry.json', skin, rightFootGroup);
+addMesh('outlineRightFootGeometry.json', outlineMaterial, rightFootGroup);
 
 scene.add(bodyGroup);
+scene.add(leftFootGroup);
+scene.add(rightFootGroup);
 
 //
 // Choreograph
@@ -62,15 +65,19 @@ const choreograph = (frame: number) => {
   const cycleLength = 900;
   const watchTowerLength = cycleLength / 4;
   const pentagramLength = 2 * watchTowerLength / 3;
+  const midStepLength = linearMap(0.5, 0, 1, pentagramLength, watchTowerLength);
 
   const cycleFrame = frame % cycleLength;
   const watchTower = 3 - Math.floor(cycleFrame / watchTowerLength);
   const watchTowerFrame = cycleFrame % watchTowerLength;
 
   const bodyAngle = boundedMap(watchTowerFrame, pentagramLength, watchTowerLength, watchTower * HALF_PI, (watchTower - 1) * HALF_PI);
+  const leftFootAngle = boundedMap(watchTowerFrame, pentagramLength, midStepLength, watchTower * HALF_PI, (watchTower - 1) * HALF_PI);
+  const rightFootAngle = boundedMap(watchTowerFrame, midStepLength, watchTowerLength, watchTower * HALF_PI, (watchTower - 1) * HALF_PI);
 
   bodyGroup.rotation.y = bodyAngle;
-
+  leftFootGroup.rotation.y = leftFootAngle;
+  rightFootGroup.rotation.y = rightFootAngle;
 };
 
 //
