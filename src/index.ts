@@ -18,39 +18,62 @@ const renderer = new THREE.WebGLRenderer({antialias: true});
 renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
 document.body.appendChild( renderer.domElement );
 
+const bodyGroup = new THREE.Group();
+
 //
 // Add the head
 //
 
 createHead().then(head => {
-  scene.add(head);
+  bodyGroup.add(head);
 });
 
 //
 // Body
 //
 
-const addMesh = (geometryFile: string, material: THREE.Material): void => {
+const addMesh = async (geometryFile: string, material: THREE.Material, parent: THREE.Object3D) => {
 
-  loadGeometry(geometryFile).then(
-    (geometry) => {
-      scene.add(
-        new THREE.Mesh(
-          geometry,
-          material
-        )
-      );
-    }
+  const geometry = await loadGeometry(geometryFile);
+
+  const mesh = new THREE.Mesh(
+    geometry,
+    material
   );
-  
+
+  parent.add(mesh);
 };
 
-addMesh('bodyGeometry.json', skin);
-addMesh('outlineBodyGeometry.json', outlineMaterial);
-addMesh('leftFootGeometry.json', skin);
-addMesh('outlineLeftFootGeometry.json', outlineMaterial);
-addMesh('rightFootGeometry.json', skin);
-addMesh('outlineRightFootGeometry.json', outlineMaterial);
+addMesh('bodyGeometry.json', skin, bodyGroup);
+addMesh('outlineBodyGeometry.json', outlineMaterial, bodyGroup);
+addMesh('leftFootGeometry.json', skin, bodyGroup);
+addMesh('outlineLeftFootGeometry.json', outlineMaterial, bodyGroup);
+
+addMesh('rightFootGeometry.json', skin, scene);
+addMesh('outlineRightFootGeometry.json', outlineMaterial, scene);
+
+scene.add(bodyGroup);
+
+//
+// Choreograph
+//
+
+let currentWatchtower = -1;
+
+const choreograph = (frame: number) => {
+  const cycleLength = 900;
+  const watchTowerLength = cycleLength / 4;
+  const pentagramLength = 2 * watchTowerLength / 3;
+  const turnLength = watchTowerLength - pentagramLength;
+
+  const cycleFrame = frame % cycleLength;
+  const watchTower = Math.floor(cycleFrame / watchTowerLength);
+
+  if (watchTower !== currentWatchtower) {
+    console.log({watchTower});
+    currentWatchtower = watchTower;
+  }
+};
 
 //
 // Animate
@@ -62,6 +85,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.update();
 
 const timingTool = new FrameTimingTool(30);
+let frame = 0;
 
 const animate = (): void => {
 
@@ -73,9 +97,11 @@ const animate = (): void => {
 
   controls.update();
 
+  choreograph(frame);
+  ++frame;
+
   renderer.render(scene, camera);
 };
 
 animate();
-
 

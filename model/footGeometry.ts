@@ -12,11 +12,12 @@ const left = (process.argv[4] === 'true');
 
 const scalar = outline ? 0.07 : 0;
 
-const radius = 0.25;
+const radius = 0.5;
 const floorLevel = -3.1;
 
-const footEllipsoid = createEllipsoid(radius, radius, radius, scalar);
-const footCenterX = left ? -1 : 1;
+const footRatio = 1.75;
+const footEllipsoid = createEllipsoid(radius, radius, radius * footRatio, scalar);
+const footCenterX = left ? -0.95 : 0.95;
 
 footEllipsoid.translate(
   footCenterX,
@@ -26,8 +27,8 @@ footEllipsoid.translate(
 
 const footEllipsoidBsp = new ThreeBSP(footEllipsoid);
 
-const floorBox = new THREE.BoxGeometry(2, radius, 2);
-floorBox.translate(footCenterX, floorLevel + (0.5 * radius), 0);
+const floorBox = new THREE.BoxGeometry(2, radius, 3);
+floorBox.translate(footCenterX, floorLevel - (0.5 * radius) - scalar, 0);
 const floorBoxBsp = new ThreeBSP(floorBox);
 
 const foot: THREE.Geometry = footEllipsoidBsp
