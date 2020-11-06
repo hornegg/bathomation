@@ -9,6 +9,17 @@ export const linearMap = (value: number, range1start: number, range1end: number,
   return range2start + (range2end - range2start) * ((value - range1start) / (range1end - range1start));
 };
 
+export const boundedMap = (value: number, range1start: number, range1end: number, range2start: number, range2end: number): number => {
+  const value2 = linearMap(value, range1start, range1end, 0, 1);
+  if (value2 < 0) {
+    return range2start;
+  } else if (value2 < 1) {
+    return linearMap(value, range1start, range1end, range2start, range2end);
+  } else {
+    return range2end;
+  }
+};
+
 export const headWidth = 1.5;
 export const headHeight = 1;
 export const headDepth = 1;

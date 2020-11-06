@@ -3,7 +3,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 import FrameTimingTool from './FrameTimingTool';
 import { createHead } from './head';
-import { skin, loadGeometry, outlineMaterial } from './common';
+import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, TWO_PI, HALF_PI } from './common';
 
 //
 // Set up the scene
@@ -46,9 +46,9 @@ const addMesh = async (geometryFile: string, material: THREE.Material, parent: T
 
 addMesh('bodyGeometry.json', skin, bodyGroup);
 addMesh('outlineBodyGeometry.json', outlineMaterial, bodyGroup);
-addMesh('leftFootGeometry.json', skin, bodyGroup);
-addMesh('outlineLeftFootGeometry.json', outlineMaterial, bodyGroup);
 
+addMesh('leftFootGeometry.json', skin, scene);
+addMesh('outlineLeftFootGeometry.json', outlineMaterial, scene);
 addMesh('rightFootGeometry.json', skin, scene);
 addMesh('outlineRightFootGeometry.json', outlineMaterial, scene);
 
@@ -58,21 +58,19 @@ scene.add(bodyGroup);
 // Choreograph
 //
 
-let currentWatchtower = -1;
-
 const choreograph = (frame: number) => {
   const cycleLength = 900;
   const watchTowerLength = cycleLength / 4;
   const pentagramLength = 2 * watchTowerLength / 3;
-  const turnLength = watchTowerLength - pentagramLength;
 
   const cycleFrame = frame % cycleLength;
-  const watchTower = Math.floor(cycleFrame / watchTowerLength);
+  const watchTower = 3 - Math.floor(cycleFrame / watchTowerLength);
+  const watchTowerFrame = cycleFrame % watchTowerLength;
 
-  if (watchTower !== currentWatchtower) {
-    console.log({watchTower});
-    currentWatchtower = watchTower;
-  }
+  const bodyAngle = boundedMap(watchTowerFrame, pentagramLength, watchTowerLength, watchTower * HALF_PI, (watchTower - 1) * HALF_PI);
+
+  bodyGroup.rotation.y = bodyAngle;
+
 };
 
 //
