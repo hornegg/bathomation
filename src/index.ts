@@ -1,9 +1,44 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import JSZip from 'jszip';
+import {saveAs} from 'file-saver';
 
 import FrameTimingTool from './FrameTimingTool';
 import { createHead } from './head';
-import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, TWO_PI, HALF_PI } from './common';
+import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI } from './common';
+
+//
+// Optionally declare stuff that will help us save the animation frames
+//
+
+let capture = 0; // Number of frames to capture.  Set to zero for no capture
+
+let zip = capture ? new JSZip() : null;
+
+const saveFrame = (frame: number) => {
+
+  let frameString = frame.toString();
+
+  while (frameString.length < 6) {
+    frameString = '0' + frameString;
+  }
+
+  canvas.toBlob((blob: Blob) => {
+
+    if (zip) {
+      zip.file(`f${frameString}.png`, blob);
+
+      if (Object.keys(zip.files).length >= capture) {
+        zip.generateAsync({type: 'blob'}).then((content) => {
+          saveAs(content, 'frames.zip');
+        });
+
+        zip = null;
+        capture = null;
+      }
+    }
+  });
+};
 
 //
 // Set up the scene
@@ -15,8 +50,15 @@ scene.background = new THREE.Color('white');
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
-renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
+
+if (capture) {
+  renderer.setSize(800, 600);
+} else {
+  renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
+}
+
 document.body.appendChild( renderer.domElement );
+const canvas: HTMLCanvasElement = renderer.domElement;
 
 const bodyGroup = new THREE.Group();
 const leftFootGroup = new THREE.Group();
@@ -103,9 +145,15 @@ const animate = (): void => {
   controls.update();
 
   choreograph(frame);
-  ++frame;
 
   renderer.render(scene, camera);
+
+  if (zip && Object.keys(zip.files).length < capture) {
+    saveFrame(frame);
+  }
+
+  ++frame;
+
 };
 
 animate();
