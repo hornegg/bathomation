@@ -8,36 +8,38 @@ import { createHead } from './head';
 import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI } from './common';
 
 //
-// Optionally declare stuff that will help us save the animation frames
+// Declare stuff that will help us capture and save the animation frames, if desired
 //
 
-let capture = 0; // Number of frames to capture.  Set to zero for no capture
+const capture = 0; // Number of frames to capture.  Set to zero for no capture
 
 let zip = capture ? new JSZip() : null;
 
 const saveFrame = (frame: number) => {
 
-  let frameString = frame.toString();
+  if (frame < capture) {
 
-  while (frameString.length < 6) {
-    frameString = '0' + frameString;
-  }
+    let frameString = frame.toString();
 
-  canvas.toBlob((blob: Blob) => {
-
-    if (zip) {
-      zip.file(`f${frameString}.png`, blob);
-
-      if (Object.keys(zip.files).length >= capture) {
-        zip.generateAsync({type: 'blob'}).then((content) => {
-          saveAs(content, 'frames.zip');
-        });
-
-        zip = null;
-        capture = null;
-      }
+    while (frameString.length < 6) {
+      frameString = '0' + frameString;
     }
-  });
+
+    canvas.toBlob((blob: Blob) => {
+
+      if (zip) {
+        zip.file(`f${frameString}.png`, blob);
+
+        if (Object.keys(zip.files).length >= capture) {
+          zip.generateAsync({type: 'blob'}).then((content) => {
+            saveAs(content, 'frames.zip');
+          });
+
+          zip = null;
+        }
+      }
+    });
+  }
 };
 
 //
@@ -148,7 +150,7 @@ const animate = (): void => {
 
   renderer.render(scene, camera);
 
-  if (zip && Object.keys(zip.files).length < capture) {
+  if (capture) {
     saveFrame(frame);
   }
 
