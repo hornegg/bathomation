@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import JSZip from 'jszip';
-import {saveAs} from 'file-saver';
 
 import FrameTimingTool from './FrameTimingTool';
+import FrameCapture from './FrameCapture';
 import { createHead } from './head';
 import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI } from './common';
 
@@ -11,36 +10,7 @@ import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI } f
 // Declare stuff that will help us capture and save the animation frames, if desired
 //
 
-const capture = 0; // Number of frames to capture.  Set to zero for no capture
-
-let zip = capture ? new JSZip() : null;
-
-const saveFrame = (frame: number) => {
-
-  if (frame < capture) {
-
-    let frameString = frame.toString();
-
-    while (frameString.length < 6) {
-      frameString = '0' + frameString;
-    }
-
-    canvas.toBlob((blob: Blob) => {
-
-      if (zip) {
-        zip.file(`f${frameString}.png`, blob);
-
-        if (Object.keys(zip.files).length >= capture) {
-          zip.generateAsync({type: 'blob'}).then((content) => {
-            saveAs(content, 'frames.zip');
-          });
-
-          zip = null;
-        }
-      }
-    });
-  }
-};
+const captureCount = 0; // Number of frames to capture.  Set to zero for no capture
 
 //
 // Set up the scene
@@ -53,7 +23,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
 
-if (capture) {
+if (captureCount) {
   renderer.setSize(800, 600);
 } else {
   renderer.setSize(window.innerWidth - 10, window.innerHeight - 20);
@@ -65,6 +35,8 @@ const canvas: HTMLCanvasElement = renderer.domElement;
 const bodyGroup = new THREE.Group();
 const leftFootGroup = new THREE.Group();
 const rightFootGroup = new THREE.Group();
+
+const capture = captureCount ? new FrameCapture(captureCount, canvas) : null;
 
 //
 // Add the head
@@ -151,7 +123,7 @@ const animate = (): void => {
   renderer.render(scene, camera);
 
   if (capture) {
-    saveFrame(frame);
+    capture.captureFrame(frame);
   }
 
   ++frame;
