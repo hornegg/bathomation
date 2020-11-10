@@ -6,10 +6,8 @@ import FrameCapture from './FrameCapture';
 import { createHead } from './head';
 import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI } from './common';
 
-//
-// Declare stuff that will help us capture and save the animation frames, if desired
-//
-
+const cycleLength = 1200; // The number of frames before the animation repeats itself
+const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
 const captureCount = 0; // Number of frames to capture.  Set to zero for no capture
 
 //
@@ -36,7 +34,7 @@ const bodyGroup = new THREE.Group();
 const leftFootGroup = new THREE.Group();
 const rightFootGroup = new THREE.Group();
 
-const capture = captureCount ? new FrameCapture(captureCount, canvas) : null;
+const capture = captureCount ? new FrameCapture(captureOffset, captureCount, canvas) : null;
 
 //
 // Add the head
@@ -78,7 +76,6 @@ scene.add(rightFootGroup);
 //
 
 const choreograph = (frame: number) => {
-  const cycleLength = 900;
   const watchTowerLength = cycleLength / 4;
   const pentagramLength = 2 * watchTowerLength / 3;
   const midStepLength = linearMap(0.5, 0, 1, pentagramLength, watchTowerLength);

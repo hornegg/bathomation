@@ -6,6 +6,7 @@ class FrameCapture {
   zip: JSZip;
 
   constructor(
+    private captureOffset: number,
     private captureCount: number, // Number of frames to capture.  Set to zero for no capture
     private canvas: HTMLCanvasElement
   ) {
@@ -13,7 +14,7 @@ class FrameCapture {
   }
 
   captureFrame(frame: number): void {
-    if (frame < this.captureCount) {
+    if (frame >= this.captureOffset && frame < this.captureOffset + this.captureCount) {
 
       let frameString = frame.toString();
   
