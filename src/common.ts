@@ -4,6 +4,7 @@ import { BufferGeometry } from 'three';
 export const PI = Math.PI;
 export const TWO_PI = 2 * PI;
 export const HALF_PI = 0.5 * PI;
+export const QUARTER_PI = 0.25 * PI;
 
 export const linearMap = (value: number, range1start: number, range1end: number, range2start: number, range2end: number): number => {
   return range2start + (range2end - range2start) * ((value - range1start) / (range1end - range1start));

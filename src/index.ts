@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import FrameTimingTool from './FrameTimingTool';
 import FrameCapture from './FrameCapture';
 import { createHead } from './head';
-import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI } from './common';
+import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI, QUARTER_PI } from './common';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
@@ -97,9 +97,10 @@ const choreograph = (frame: number) => {
 // Animate
 //
 
-camera.position.z = 5;
+camera.position.setFromSphericalCoords(5, HALF_PI, QUARTER_PI);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.y = -0.6;
 controls.update();
 
 const timingTool = new FrameTimingTool(30);
