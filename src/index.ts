@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import '../THREE.Fire/Fire';
+import '../THREE.Fire/FireShader';
 
 import FrameTimingTool from './FrameTimingTool';
 import FrameCapture from './FrameCapture';
@@ -72,6 +74,22 @@ scene.add(leftFootGroup);
 scene.add(rightFootGroup);
 
 //
+// Fire
+//
+
+const tl = new THREE.TextureLoader();
+const tex = tl.load('Fire.png');
+const fire = new THREE.Fire( tex );
+
+const floorLevel = -3.1;
+
+fire.position.x = -5;
+fire.position.y = floorLevel;
+fire.scale.set(2, 2, 2);
+
+scene.add(fire);
+
+//
 // Choreograph
 //
 
@@ -117,6 +135,7 @@ const animate = (): void => {
   controls.update();
 
   choreograph(frame);
+  fire.update(frame / 25);
 
   renderer.render(scene, camera);
 

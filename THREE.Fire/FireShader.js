@@ -1,3 +1,7 @@
+/* eslint-disable no-tabs */
+/* eslint-disable no-import-assign */
+/* eslint-disable quotes */
+
 /**
  * @author mattatz / http://mattatz.github.io
  *
@@ -11,7 +15,9 @@
  * primitive: blog | object space raymarching / https://github.com/ashima/webgl-noise/blob/master/src/noise3D.glsl
  */
 
-THREE.FireShader = {
+import * as THREE from 'three';
+
+ THREE.FireShader = {
 
     defines: {
         "ITERATIONS"    : "20",

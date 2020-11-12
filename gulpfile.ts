@@ -26,6 +26,20 @@ const runChangedScript = (params: RunChangedScriptParams): void => {
 
   const task = (callback): void => {
 
+    // Ensure that dependencies have been built
+
+    const missing = params.additionalDependencies.reduce((acc, dependency) => {
+      return acc ? acc : !fs.existsSync(dependency);
+    }, false);
+  
+    if (missing) {
+      // Just something that has not been built yet, probably not an error on its own
+      callback();
+      return; 
+    }
+
+    // Run script
+
     const script = spawn('node_modules\\.bin\\ts-node.cmd', [params.src, params.dest, ...params.args]);
 
     script.stdout.on('data', (data) => {

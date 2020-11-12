@@ -1,8 +1,13 @@
+/* eslint-disable no-tabs */
+/* eslint-disable no-import-assign */
 /**
  * @author mattatz / http://github.com/mattatz
  *
  * Ray tracing based real-time procedural volumetric fire object for three.js
  */
+
+import * as THREE from 'three';
+import './FireShader';
 
 THREE.Fire = function ( fireTex, color ) {
 
