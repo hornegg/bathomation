@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import '../THREE.Fire/Fire';
-import '../THREE.Fire/FireShader';
+import './THREE.Fire/Fire';
+import './THREE.Fire/FireShader';
 
 import FrameTimingTool from './FrameTimingTool';
 import FrameCapture from './FrameCapture';
@@ -77,9 +77,11 @@ scene.add(rightFootGroup);
 // Fire
 //
 
-const tl = new THREE.TextureLoader();
-const tex = tl.load('Fire.png');
-const fire = new THREE.Fire( tex );
+const textureLoader = new THREE.TextureLoader();
+const tex = textureLoader.load('THREE.Fire/Fire.png');
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fire = new (THREE as any).Fire( tex );
 
 const floorLevel = -3.1;
 

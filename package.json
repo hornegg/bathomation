@@ -2,10 +2,10 @@
   "name": "bathomation",
   "version": "1.0.0",
   "scripts": {
-    "build": "parcel build src/index.html THREE.Fire/Fire.png",
+    "build": "parcel build src/index.html src/THREE.Fire/Fire.png",
     "gulp": "gulp",
     "lint": "eslint . --ext .ts --ext .js",
-    "parcel": "parcel src/index.html THREE.Fire/Fire.png",
+    "parcel": "parcel src/index.html src/THREE.Fire/Fire.png",
     "preinstall": "npx npm-force-resolutions",
     "start": "run-p gulp parcel"
   },
