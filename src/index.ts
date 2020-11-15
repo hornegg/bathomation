@@ -77,11 +77,20 @@ scene.add(rightFootGroup);
 // Fire
 //
 
-const textureLoader = new THREE.TextureLoader();
-const tex = textureLoader.load('THREE.Fire/Fire.png');
+interface Fire extends THREE.Object3D {
+  update(time: number): void;
+}
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fire = new (THREE as any).Fire( tex );
+const createFire: () => Fire = (() => {
+
+  const textureLoader = new THREE.TextureLoader();
+  const tex = textureLoader.load('THREE.Fire/Fire.png');
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return () => new (THREE as any).Fire( tex );
+})();
+
+const fire = createFire();
 
 const floorLevel = -3.1;
 
