@@ -1,12 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import './THREE.Fire/Fire';
-import './THREE.Fire/FireShader';
 
 import FrameTimingTool from './FrameTimingTool';
 import FrameCapture from './FrameCapture';
 import { createHead } from './head';
-import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI, QUARTER_PI, TWO_PI } from './common';
+import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI, QUARTER_PI } from './common';
+import Pentagram from './Pentagram';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
@@ -75,51 +74,8 @@ scene.add(bodyGroup);
 scene.add(leftFootGroup);
 scene.add(rightFootGroup);
 
-//
-// Fire
-//
-
-interface Fire extends THREE.Object3D {
-  update(time: number): void;
-}
-
-const createFire: () => Fire = (() => {
-
-  const textureLoader = new THREE.TextureLoader();
-  const tex = textureLoader.load('THREE.Fire/Fire.png');
-  
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return () => new (THREE as any).Fire( tex );
-})();
-
-const flameCount = 10;
-
-// const floorLevel = -3.1;
-
-const fires = (new Array(flameCount)).fill(0).map((_, index) => {
-  const theta = linearMap(index, 0, flameCount, 0, TWO_PI);
-  const radius = 1;
-
-  const fire = createFire();
-
-  fire.position.x = -2;
-  fire.position.y = radius * Math.sin(theta);
-  fire.position.z = radius * Math.cos(theta);
-
-  fire.renderOrder = -1000;
-
-//  fire.rotateZ(
-
-  return fire;
-});
-
-const fireGroup = new THREE.Group();
-
-fires.forEach(
-  (fire) => fireGroup.add(fire)
-);
-
-sceneBehind.add(fireGroup);
+const pentagram = new Pentagram();
+pentagram.add(sceneBehind);
 
 //
 // Choreograph
@@ -168,10 +124,8 @@ const animate = (): void => {
 
   choreograph(frame);
 
-  fires.forEach(
-    (fire) => fire.update(frame / 25)
-  );
-  
+  pentagram.update(frame);
+
   renderer.autoClear = true;
   renderer.render(sceneBehind, camera);
   renderer.autoClear = false;
