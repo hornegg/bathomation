@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
-import { linearMap, TWO_PI } from './common';
+import { HALF_PI, linearMap, TWO_PI } from './common';
 
 const flameCount = 10;
 
@@ -24,7 +24,7 @@ class Pentagram {
   private fires: Fire[];
   private fireGroup = new THREE.Group();
 
-  constructor() {
+  constructor(angle: number) {
 
     this.fires = (new Array(flameCount)).fill(0).map((_, index) => {
       const theta = linearMap(index, 0, flameCount, 0, TWO_PI);
@@ -38,14 +38,14 @@ class Pentagram {
 
       fire.renderOrder = -1000;
 
-    //  fire.rotateZ(
-
       return fire;
     });
 
     this.fires.forEach(
       (fire) => this.fireGroup.add(fire)
     );
+
+    this.fireGroup.rotateY(angle);
   }
 
   add(scene: THREE.Scene): void {

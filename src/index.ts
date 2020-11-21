@@ -4,7 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import FrameTimingTool from './FrameTimingTool';
 import FrameCapture from './FrameCapture';
 import { createHead } from './head';
-import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI, QUARTER_PI } from './common';
+import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, QUARTER_PI, HALF_PI, PI } from './common';
 import Pentagram from './Pentagram';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
@@ -74,8 +74,17 @@ scene.add(bodyGroup);
 scene.add(leftFootGroup);
 scene.add(rightFootGroup);
 
-const pentagram = new Pentagram();
-pentagram.add(sceneBehind);
+const pentagrams = [
+  new Pentagram(0),
+  new Pentagram(-HALF_PI),
+  new Pentagram(-PI),
+  new Pentagram(-3 * HALF_PI)
+];
+
+pentagrams[0].add(sceneBehind);
+pentagrams[1].add(sceneBehind);
+pentagrams[2].add(scene);
+pentagrams[3].add(scene);
 
 //
 // Choreograph
@@ -124,7 +133,7 @@ const animate = (): void => {
 
   choreograph(frame);
 
-  pentagram.update(frame);
+  pentagrams.forEach(pentagram => pentagram.update(frame));
 
   renderer.autoClear = true;
   renderer.render(sceneBehind, camera);
