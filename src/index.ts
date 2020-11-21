@@ -6,7 +6,7 @@ import './THREE.Fire/FireShader';
 import FrameTimingTool from './FrameTimingTool';
 import FrameCapture from './FrameCapture';
 import { createHead } from './head';
-import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI, QUARTER_PI } from './common';
+import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, HALF_PI, QUARTER_PI, TWO_PI } from './common';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
@@ -17,7 +17,9 @@ const captureCount = 0; // Number of frames to capture.  Set to zero for no capt
 //
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('white');
+const sceneBehind = new THREE.Scene();
+
+sceneBehind.background = new THREE.Color('white');
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -90,15 +92,34 @@ const createFire: () => Fire = (() => {
   return () => new (THREE as any).Fire( tex );
 })();
 
-const fire = createFire();
+const flameCount = 10;
 
-const floorLevel = -3.1;
+// const floorLevel = -3.1;
 
-fire.position.x = -5;
-fire.position.y = floorLevel;
-fire.scale.set(2, 2, 2);
+const fires = (new Array(flameCount)).fill(0).map((_, index) => {
+  const theta = linearMap(index, 0, flameCount, 0, TWO_PI);
+  const radius = 1;
 
-scene.add(fire);
+  const fire = createFire();
+
+  fire.position.x = -2;
+  fire.position.y = radius * Math.sin(theta);
+  fire.position.z = radius * Math.cos(theta);
+
+  fire.renderOrder = -1000;
+
+//  fire.rotateZ(
+
+  return fire;
+});
+
+const fireGroup = new THREE.Group();
+
+fires.forEach(
+  (fire) => fireGroup.add(fire)
+);
+
+sceneBehind.add(fireGroup);
 
 //
 // Choreograph
@@ -146,8 +167,14 @@ const animate = (): void => {
   controls.update();
 
   choreograph(frame);
-  fire.update(frame / 25);
 
+  fires.forEach(
+    (fire) => fire.update(frame / 25)
+  );
+  
+  renderer.autoClear = true;
+  renderer.render(sceneBehind, camera);
+  renderer.autoClear = false;
   renderer.render(scene, camera);
 
   if (capture) {
