@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
-import { HALF_PI, linearMap, TWO_PI } from './common';
+import { linearMap, TWO_PI } from './common';
 
 const flameCount = 10;
 
@@ -10,21 +10,18 @@ interface Fire extends THREE.Object3D {
   update(time: number): void;
 }
 
-const createFire: () => Fire = (() => {
-
-  const textureLoader = new THREE.TextureLoader();
-  const tex = textureLoader.load('THREE.Fire/Fire.png');
-  
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return () => new (THREE as any).Fire( tex );
-})();
-
 class Pentagram {
 
   private fires: Fire[];
   private fireGroup = new THREE.Group();
 
-  constructor(angle: number) {
+  constructor(angle: number, textureUrl: string) {
+
+    const textureLoader = new THREE.TextureLoader();
+    const tex = textureLoader.load(textureUrl);
+  
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const createFire = () => new (THREE as any).Fire( tex );
 
     this.fires = (new Array(flameCount)).fill(0).map((_, index) => {
       const theta = linearMap(index, 0, flameCount, 0, TWO_PI);

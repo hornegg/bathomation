@@ -75,10 +75,10 @@ scene.add(leftFootGroup);
 scene.add(rightFootGroup);
 
 const pentagrams = [
-  new Pentagram(0),
-  new Pentagram(-HALF_PI),
-  new Pentagram(-PI),
-  new Pentagram(-3 * HALF_PI)
+  new Pentagram(0, 'blueFire.png'),
+  new Pentagram(-HALF_PI, 'greenFire.png'),
+  new Pentagram(-PI, 'yellowFire.png'),
+  new Pentagram(-3 * HALF_PI, 'redFire.png')
 ];
 
 pentagrams[0].add(sceneBehind);

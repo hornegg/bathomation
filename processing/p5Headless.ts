@@ -8,7 +8,6 @@ global.ImageData = Canvas.ImageData;
 window.ImageData = Canvas.ImageData;
 
 import * as p5 from 'p5';
-import { file } from 'jszip';
 
 export { p5 };
 
