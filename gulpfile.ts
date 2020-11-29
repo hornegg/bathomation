@@ -64,6 +64,19 @@ const runChangedScript = (params: RunChangedScriptParams): void => {
 
 const defaultTask = (): void => {
 
+  // fire hues
+
+  runChangedScript({
+    displayName: 'changeHues',
+    src: 'processing/changeHues.ts',
+    dest: 'dist/redFire.png',
+    args: [],
+    additionalDependencies: [
+      'src/THREE.Fire/Fire.png',
+      'processing/createHeadlessP5.ts'
+    ]
+  });
+
   // head
 
   runChangedScript({
