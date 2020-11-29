@@ -8,13 +8,33 @@ global.ImageData = Canvas.ImageData;
 window.ImageData = Canvas.ImageData;
 
 import * as p5 from 'p5';
+import { file } from 'jszip';
 
 export { p5 };
 
 export default p5;
 
-//export const readPng = (filename: string): Promise<p5.Image> => {
-//};
+export const readPng = (filename: string): Promise<p5.Image> => {
+  return new Promise((resolve) => {
+   
+  fs.createReadStream(filename)
+    .pipe(new PNG())
+    .on('parsed', function () {
+      const img = new p5.Image();
+      img.resize(this.width, this.height);
+      img.loadPixels();
+    
+      Array.from(this.data).forEach((value, index) => {
+        if (index < img.pixels.length) {
+          img.pixels[index] = value;
+        }
+      });
+    
+      img.updatePixels();
+      resolve(img);
+    });
+  });
+};
 
 export const readPngSync = (filename: string): p5.Image => {
 
@@ -30,7 +50,7 @@ export const readPngSync = (filename: string): p5.Image => {
       img.pixels[index] = value;
     }
   });
-  
+
   img.updatePixels();
 
   return img;
