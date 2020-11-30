@@ -7,6 +7,10 @@ globalJsDom();
 global.ImageData = Canvas.ImageData;
 window.ImageData = Canvas.ImageData;
 
+// hack to get error handling working
+(document as any)._ownerDocument = document;
+(document as any)._defaultView = window;
+
 import * as p5 from 'p5';
 
 export { p5 };
