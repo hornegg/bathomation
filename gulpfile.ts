@@ -1,3 +1,5 @@
+import * as fs from 'fs/promises';
+
 import * as gulp from 'gulp';
 import * as newer from 'gulp-newer';
 import * as run from 'gulp-run';
@@ -16,13 +18,20 @@ interface WatchRunNewerParams extends CommonParams {
 
 const watchRunNewer = (params: WatchRunNewerParams): void => {
 
-  const task = () => 
-    gulp.src(params.src).pipe(
-      newer(params).pipe(
-        run(params.cmd).exec()
-      ).pipe(
-        noop()
+  const task = () =>
+
+    Promise.all(
+      params.extra.map(filename => fs.stat(filename))
+    ).then(() => 
+      gulp.src(params.src).pipe(
+        newer(params).pipe(
+          run(params.cmd).exec()
+        ).pipe(
+          noop()
+        )
       )
+    ).catch(
+      () => noop()
     );
 
   task.displayName = params.displayName;
@@ -53,7 +62,7 @@ const defaultTask = (): void => {
     args: [],
     extra: [
       'src/THREE.Fire/Fire.png',
-      'processing/createHeadlessP5.ts'
+      'processing/p5Headless.ts'
     ]
   });
 
