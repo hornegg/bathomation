@@ -1,4 +1,5 @@
 import {p5, readPngSync, writePngSync} from './p5Headless';
+import * as path from 'path';
 
 new p5((p: p5) => {
 
@@ -25,22 +26,24 @@ new p5((p: p5) => {
 
   p.setup = () => {
 
-    const imgBlue = readPngSync(`${__dirname}/../src/THREE.Fire/Fire.png`);
-    const imgGreen = readPngSync(`${__dirname}/../src/THREE.Fire/Fire.png`);
-    const imgYellow = readPngSync(`${__dirname}/../src/THREE.Fire/Fire.png`);
-    const imgRed = readPngSync(`${__dirname}/../src/THREE.Fire/Fire.png`);
+    const src = path.join(__dirname, '../src/THREE.Fire/Fire.png');
+
+    const imgBlue = readPngSync(src);
+    const imgGreen = readPngSync(src);
+    const imgYellow = readPngSync(src);
+    const imgRed = readPngSync(src);
 
     changeHues(imgBlue, 256);
-    writePngSync(imgBlue, '${__dirname}/../dist/blueFire.png');
+    writePngSync(imgBlue, path.join(__dirname, '/../dist/blueFire.png'));
 
     changeHues(imgGreen, 128);
-    writePngSync(imgGreen, '${__dirname}/../dist/greenFire.png');
+    writePngSync(imgGreen, path.join(__dirname, '/../dist/greenFire.png'));
 
     changeHues(imgYellow, 64);
-    writePngSync(imgYellow, '${__dirname}/../dist/yellowFire.png');
+    writePngSync(imgYellow, path.join(__dirname, '/../dist/yellowFire.png'));
 
     changeHues(imgRed, 0);
-    writePngSync(imgRed, '${__dirname}/../dist/redFire.png');
+    writePngSync(imgRed, path.join(__dirname, '/../dist/redFire.png'));
 
     process.exit(0);
   };

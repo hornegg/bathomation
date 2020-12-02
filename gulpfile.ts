@@ -1,77 +1,52 @@
-import { spawn } from 'child_process';
-import * as fs from 'fs';
-
 import * as gulp from 'gulp';
+import * as newer from 'gulp-newer';
+import * as run from 'gulp-run';
+import * as noop from 'gulp-noop';
 
-interface RunChangedScriptParams {
-  displayName: string;
+interface WatchRunNewerParams {
+  cmd: string;
+  src: string;
+  dest: string;
+  extra: string[];
+}
+
+const watchRunNewer = (params: WatchRunNewerParams): void => {
+
+  gulp.watch([params.src, ...params.extra], {ignoreInitial: false}, () => 
+    gulp.src(params.src).pipe(
+      newer(params).pipe(
+        run(params.cmd).exec()
+      ).pipe(
+        noop()
+      )
+    )
+  );
+  
+};
+
+interface WatchRunScriptNewerParams {
   src: string;
   dest: string;
   args: string[];
-  additionalDependencies: string[];
+  extra: string[];
 }
 
-const runChangedScript = (params: RunChangedScriptParams): void => {
-
-  let ignoreInitial = false;
-
-  if (fs.existsSync(params.dest)) {
-    const srcStat = fs.statSync(params.src);
-    const destStat = fs.statSync(params.dest);
-
-    ignoreInitial = destStat.mtime > srcStat.mtime;
-  }
-
-  const depends = [params.src, ...params.additionalDependencies];
-
-  const task = (callback): void => {
-
-    // Ensure that dependencies have been built
-
-    const missing = params.additionalDependencies.reduce((acc, dependency) => {
-      return acc ? acc : !fs.existsSync(dependency);
-    }, false);
-  
-    if (missing) {
-      // Just something that has not been built yet, probably not an error on its own
-      callback();
-      return; 
-    }
-
-    // Run script
-
-    const script = spawn('node_modules\\.bin\\ts-node.cmd', [params.src, params.dest, ...params.args]);
-
-    script.stdout.on('data', (data) => {
-      console.log(data.toString());
-    });
-
-    script.stderr.on('data', (data) => {
-      console.log(data.toString());
-    });
-
-    script.on('close', (code) => {
-      callback(code ?  new Error('Script return code non-zero') : undefined);
-    });
-
-  }; 
-
-  task.displayName = params.displayName;
-
-  gulp.watch(depends, {ignoreInitial}, task);
-  
+const watchRunScriptNewer = (params: WatchRunScriptNewerParams) => {
+  watchRunNewer({
+    ...params,
+    cmd: `node_modules\\.bin\\ts-node.cmd ${params.src} ${params.dest} ${params.args.join(' ')}`
+  });
 };
 
 const defaultTask = (): void => {
 
   // fire hues
 
-  runChangedScript({
-    displayName: 'changeHues',
+  watchRunScriptNewer({
     src: 'processing/changeHues.ts',
     dest: 'dist/redFire.png',
     args: [],
-    additionalDependencies: [
+    extra: [
       'src/THREE.Fire/Fire.png',
       'processing/createHeadlessP5.ts'
     ]
@@ -79,45 +54,41 @@ const defaultTask = (): void => {
 
   // head
 
-  runChangedScript({
-    displayName: 'headGeometry',
+  watchRunScriptNewer({
     src: 'model/headGeometry.ts',
     dest: 'dist/headGeometry.json',
     args: ['false'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts'
     ]
   });
 
-  runChangedScript({
-    displayName: 'outlineHeadGeometry',
+  watchRunScriptNewer({
     src: 'model/headGeometry.ts',
     dest: 'dist/outlineHeadGeometry.json',
     args: ['true'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts'
     ]
   });
 
   // body
 
-  runChangedScript({
-    displayName: 'bodyGeometry',
+  watchRunScriptNewer({
     src: 'model/bodyGeometry.ts',
     dest: 'dist/bodyGeometry.json',
     args: ['false'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts',
       'dist/outlineHeadGeometry.json'
     ]
   });
 
-  runChangedScript({
-    displayName: 'outlineBodyGeometry',
+  watchRunScriptNewer({
     src: 'model/bodyGeometry.ts',
     dest: 'dist/outlineBodyGeometry.json',
     args: ['true'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts',
       'dist/outlineHeadGeometry.json'
     ]
@@ -125,23 +96,21 @@ const defaultTask = (): void => {
 
   // left foot
 
-  runChangedScript({
-    displayName: 'leftFootGeometry',
+  watchRunScriptNewer({
     src: 'model/footGeometry.ts',
     dest: 'dist/leftFootGeometry.json',
     args: ['false', 'true'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts',
       'dist/outlineBodyGeometry.json'
     ]
   });
 
-  runChangedScript({
-    displayName: 'outlineLeftFootGeometry',
+  watchRunScriptNewer({
     src: 'model/footGeometry.ts',
     dest: 'dist/outlineLeftFootGeometry.json',
     args: ['true', 'true'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts',
       'dist/outlineBodyGeometry.json'
     ]
@@ -149,23 +118,21 @@ const defaultTask = (): void => {
 
   // right foot
 
-  runChangedScript({
-    displayName: 'rightFootGeometry',
+  watchRunScriptNewer({
     src: 'model/footGeometry.ts',
     dest: 'dist/rightFootGeometry.json',
     args: ['false', 'false'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts',
       'dist/outlineBodyGeometry.json'
     ]
   });
 
-  runChangedScript({
-    displayName: 'outlineRightFootGeometry',
+  watchRunScriptNewer({
     src: 'model/footGeometry.ts',
     dest: 'dist/outlineRightFootGeometry.json',
     args: ['true', 'false'],
-    additionalDependencies: [
+    extra: [
       'model/commonGeometry.ts',
       'dist/outlineBodyGeometry.json'
     ]
