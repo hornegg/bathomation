@@ -3,32 +3,36 @@ import * as newer from 'gulp-newer';
 import * as run from 'gulp-run';
 import * as noop from 'gulp-noop';
 
-interface WatchRunNewerParams {
-  cmd: string;
+interface CommonParams {
+  displayName: string;
   src: string;
   dest: string;
   extra: string[];
 }
 
+interface WatchRunNewerParams extends CommonParams {
+  cmd: string;
+}
+
 const watchRunNewer = (params: WatchRunNewerParams): void => {
 
-  gulp.watch([params.src, ...params.extra], {ignoreInitial: false}, () => 
+  const task = () => 
     gulp.src(params.src).pipe(
       newer(params).pipe(
         run(params.cmd).exec()
       ).pipe(
         noop()
       )
-    )
-  );
+    );
+
+  task.displayName = params.displayName;
+
+  gulp.watch([params.src, ...params.extra], {ignoreInitial: false}, task);
   
 };
 
-interface WatchRunScriptNewerParams {
-  src: string;
-  dest: string;
+interface WatchRunScriptNewerParams extends CommonParams {
   args: string[];
-  extra: string[];
 }
 
 const watchRunScriptNewer = (params: WatchRunScriptNewerParams) => {
@@ -43,6 +47,7 @@ const defaultTask = (): void => {
   // fire hues
 
   watchRunScriptNewer({
+    displayName: 'changeHues',
     src: 'processing/changeHues.ts',
     dest: 'dist/redFire.png',
     args: [],
@@ -55,6 +60,7 @@ const defaultTask = (): void => {
   // head
 
   watchRunScriptNewer({
+    displayName: 'headGeometry',
     src: 'model/headGeometry.ts',
     dest: 'dist/headGeometry.json',
     args: ['false'],
@@ -64,6 +70,7 @@ const defaultTask = (): void => {
   });
 
   watchRunScriptNewer({
+    displayName: 'outlineHeadGeometry',
     src: 'model/headGeometry.ts',
     dest: 'dist/outlineHeadGeometry.json',
     args: ['true'],
@@ -75,6 +82,7 @@ const defaultTask = (): void => {
   // body
 
   watchRunScriptNewer({
+    displayName: 'bodyGeometry',
     src: 'model/bodyGeometry.ts',
     dest: 'dist/bodyGeometry.json',
     args: ['false'],
@@ -85,6 +93,7 @@ const defaultTask = (): void => {
   });
 
   watchRunScriptNewer({
+    displayName: 'outlineBodyGeometry',
     src: 'model/bodyGeometry.ts',
     dest: 'dist/outlineBodyGeometry.json',
     args: ['true'],
@@ -97,6 +106,7 @@ const defaultTask = (): void => {
   // left foot
 
   watchRunScriptNewer({
+    displayName: 'leftFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/leftFootGeometry.json',
     args: ['false', 'true'],
@@ -107,6 +117,7 @@ const defaultTask = (): void => {
   });
 
   watchRunScriptNewer({
+    displayName: 'outlineLeftFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/outlineLeftFootGeometry.json',
     args: ['true', 'true'],
@@ -119,6 +130,7 @@ const defaultTask = (): void => {
   // right foot
 
   watchRunScriptNewer({
+    displayName: 'rightFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/rightFootGeometry.json',
     args: ['false', 'false'],
@@ -129,6 +141,7 @@ const defaultTask = (): void => {
   });
 
   watchRunScriptNewer({
+    displayName: 'outlineRightFootGeometry',
     src: 'model/footGeometry.ts',
     dest: 'dist/outlineRightFootGeometry.json',
     args: ['true', 'false'],
@@ -137,7 +150,6 @@ const defaultTask = (): void => {
       'dist/outlineBodyGeometry.json'
     ]
   });
-
 };
 
 export default defaultTask;
