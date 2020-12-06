@@ -33,7 +33,6 @@
     "eslint": "^7.12.1",
     "file-saver": "^2.0.2",
     "gulp": "^4.0.2",
-    "gulp-newer": "^1.4.0",
     "gulp-noop": "^1.0.1",
     "gulp-run": "^1.7.1",
     "jsdom": "^16.4.0",
