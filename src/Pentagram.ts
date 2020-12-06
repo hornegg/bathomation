@@ -4,7 +4,7 @@ import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
 import { linearMap, TWO_PI } from './common';
 
-const flameCount = 10;
+const flameCount = 5;
 
 interface Fire extends THREE.Object3D {
   update(time: number): void;
@@ -32,8 +32,6 @@ class Pentagram {
       fire.position.x = -2;
       fire.position.y = radius * Math.sin(theta);
       fire.position.z = radius * Math.cos(theta);
-
-      fire.renderOrder = -1000;
 
       return fire;
     });

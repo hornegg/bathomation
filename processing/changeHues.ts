@@ -32,17 +32,23 @@ new p5((p: p5) => {
     const imgGreen = readPngSync(src);
     const imgYellow = readPngSync(src);
     const imgRed = readPngSync(src);
-
-    changeHues(imgBlue, 256);
+/*
+    for (let adj = 0; adj < 512; adj += 16) {
+      const img = readPngSync(src);
+      changeHues(img, adj);
+      writePngSync(img, path.join(__dirname, `/../dist/Fire${adj}.png`));
+    } 
+*/
+    changeHues(imgBlue, 212);
     writePngSync(imgBlue, path.join(__dirname, '/../dist/blueFire.png'));
 
-    changeHues(imgGreen, 128);
+    changeHues(imgGreen, 60);
     writePngSync(imgGreen, path.join(__dirname, '/../dist/greenFire.png'));
 
-    changeHues(imgYellow, 64);
+    changeHues(imgYellow, 12);
     writePngSync(imgYellow, path.join(__dirname, '/../dist/yellowFire.png'));
 
-    changeHues(imgRed, 0);
+    changeHues(imgRed, -16);
     writePngSync(imgRed, path.join(__dirname, '/../dist/redFire.png'));
 
     process.exit(0);
