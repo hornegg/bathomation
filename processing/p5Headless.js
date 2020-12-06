@@ -1,23 +1,21 @@
-import * as fs from 'fs';
-import * as globalJsDom from 'jsdom-global';
-import * as Canvas from 'canvas';
-import { PNG } from 'pngjs';
+/* global require, global, window, document, Buffer, module */
+
+const fs = require('fs');
+const globalJsDom = require('jsdom-global');
+const Canvas = require('canvas');
+const PNG = require('pngjs').PNG;
 
 globalJsDom();
 global.ImageData = Canvas.ImageData;
 window.ImageData = Canvas.ImageData;
 
 // hack to get error handling working
-(document as any)._ownerDocument = document;
-(document as any)._defaultView = window;
+document._ownerDocument = document;
+document._defaultView = window;
 
-import * as p5 from 'p5';
+const p5 = require('p5');
 
-export { p5 };
-
-export default p5;
-
-export const readPng = (filename: string): Promise<p5.Image> => {
+const readPng = (filename) => {
   return new Promise((resolve) => {
    
   fs.createReadStream(filename)
@@ -39,7 +37,7 @@ export const readPng = (filename: string): Promise<p5.Image> => {
   });
 };
 
-export const readPngSync = (filename: string): p5.Image => {
+const readPngSync = (filename) => {
 
   const buffer = fs.readFileSync(filename);
   const png = PNG.sync.read(buffer);
@@ -59,7 +57,7 @@ export const readPngSync = (filename: string): p5.Image => {
   return img;
 };
 
-export const writePng = (g: p5 | p5.Image | p5.Graphics, filename: string): Promise<void> => {
+const writePng = (g, filename) => {
   return new Promise((resolve) => {
 
     g.loadPixels();
@@ -72,7 +70,7 @@ export const writePng = (g: p5 | p5.Image | p5.Graphics, filename: string): Prom
   });
 };
 
-export const writePngSync = (g: p5 | p5.Image | p5.Graphics, filename: string): void => {
+const writePngSync = (g, filename) => {
 
   g.loadPixels();
   const png = new PNG({width: g.width, height: g.height});
@@ -82,4 +80,12 @@ export const writePngSync = (g: p5 | p5.Image | p5.Graphics, filename: string): 
   fs.writeFileSync(filename, buffer);
 };
 
+module.exports = {
+  p5,
+  default: p5,
+  readPng,
+  readPngSync,
+  writePng,
+  writePngSync
+};
 
