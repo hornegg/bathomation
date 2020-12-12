@@ -1,29 +1,31 @@
 import {p5, readPngSync, writePngSync} from './p5Headless';
 import * as path from 'path';
+import {times} from 'lodash';
 
 new p5((p: p5) => {
 
   const changeHues = (img: p5.Image, adjustment: number) => {
-    for (let x = 0; x < img.width; ++x) {
-      for (let y = 0; y < img.height; ++y) {
+    times(img.width, x => {
+      times(img.height, y => {
 
         p.colorMode(p.RGB);
         const oldColor = p.color(img.get(x, y));
 
-        let h = p.hue(oldColor);
+        const oldHue = p.hue(oldColor);
         const s = p.saturation(oldColor);
         const b = p.brightness(oldColor);
 
-        h += adjustment;
+        const newHue = oldHue + adjustment;
         p.colorMode(p.HSB);
-        const newColor = p.color(h, s, b);
+        const newColor = p.color(newHue, s, b);
         img.set(x, y, newColor);
-      }
-    }
+      });
+    });
 
     img.updatePixels();
   };
 
+  // eslint-disable-next-line immutable/no-mutation
   p.setup = () => {
 
     const src = path.join(__dirname, '../src/THREE.Fire/Fire.png');

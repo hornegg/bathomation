@@ -1,15 +1,15 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
-import FrameTimingTool from './FrameTimingTool';
+import { createFrameTimingTool } from './frameTimingTool';
 import FrameCapture from './FrameCapture';
 import { createHead } from './head';
 import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, QUARTER_PI, HALF_PI, PI } from './common';
-import Pentagram from './Pentagram';
+import { createPentagram } from './pentagram';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
-const captureCount = 0; // Number of frames to capture.  Set to zero for no capture
+const captureCount = 100; // Number of frames to capture.  Set to zero for no capture
 
 //
 // Set up the scene
@@ -18,6 +18,7 @@ const captureCount = 0; // Number of frames to capture.  Set to zero for no capt
 const scene = new THREE.Scene();
 const sceneBehind = new THREE.Scene();
 
+// eslint-disable-next-line immutable/no-mutation
 sceneBehind.background = new THREE.Color('white');
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -75,10 +76,10 @@ scene.add(leftFootGroup);
 scene.add(rightFootGroup);
 
 const pentagrams = [
-  new Pentagram(0, 'blueFire.png'),
-  new Pentagram(-HALF_PI, 'greenFire.png'),
-  new Pentagram(-PI, 'yellowFire.png'),
-  new Pentagram(-3 * HALF_PI, 'redFire.png')
+  createPentagram(0, 'blueFire.png'),
+  createPentagram(-HALF_PI, 'greenFire.png'),
+  createPentagram(-PI, 'yellowFire.png'),
+  createPentagram(-3 * HALF_PI, 'redFire.png')
 ];
 
 pentagrams[0].add(sceneBehind);
@@ -103,9 +104,11 @@ const choreograph = (frame: number) => {
   const leftFootAngle = boundedMap(watchTowerFrame, pentagramLength, midStepLength, watchTower * HALF_PI, (watchTower - 1) * HALF_PI);
   const rightFootAngle = boundedMap(watchTowerFrame, midStepLength, watchTowerLength, watchTower * HALF_PI, (watchTower - 1) * HALF_PI);
 
+  /* eslint-disable immutable/no-mutation */
   bodyGroup.rotation.y = bodyAngle;
   leftFootGroup.rotation.y = leftFootAngle;
   rightFootGroup.rotation.y = rightFootAngle;
+  /* eslint-enable immutable/no-mutation */
 };
 
 //
@@ -115,18 +118,24 @@ const choreograph = (frame: number) => {
 camera.position.setFromSphericalCoords(5, HALF_PI, QUARTER_PI);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+// eslint-disable-next-line immutable/no-mutation
 controls.target.y = -0.6;
 controls.update();
 
-const timingTool = new FrameTimingTool(30);
-let frame = 0;
+const timingTool = createFrameTimingTool(30);
 
-const animate = (): void => {
+const nextAnimateFunction = (frame: number) => {
+  return () => {
+    animate(frame + 1);
+  };
+};
+
+const animate = (frame): void => {
 
   setTimeout(() => {
-      requestAnimationFrame( animate );
+      requestAnimationFrame( nextAnimateFunction(frame) );
     },
-    timingTool.calculateTimeToNextFrame()
+    timingTool()
   );
 
   controls.update();
@@ -135,10 +144,12 @@ const animate = (): void => {
 
   pentagrams.forEach(pentagram => pentagram.update(frame));
 
+  /* eslint-disable immutable/no-mutation */
   renderer.autoClear = true;
   renderer.render(sceneBehind, camera);
   renderer.autoClear = false;
   renderer.render(scene, camera);
+  /* eslint-enable immutable/no-mutation */
 
   if (capture) {
     capture.captureFrame(frame);
@@ -148,5 +159,5 @@ const animate = (): void => {
 
 };
 
-animate();
+nextAnimateFunction(0)();
 

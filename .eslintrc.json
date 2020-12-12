@@ -17,7 +17,7 @@
     },
     "overrides": [{
       "files": ["*.ts*"],
-      "plugins": ["@typescript-eslint"],
+      "plugins": ["@typescript-eslint", "immutable"],
       "extends": [
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
@@ -26,7 +26,10 @@
         "@typescript-eslint/semi": ["error"],
         "@typescript-eslint/camelcase": ["off"],
         "@typescript-eslint/no-empty-function": ["off"],
-        "@typescript-eslint/interface-name-prefix": ["off"]
+        "@typescript-eslint/interface-name-prefix": ["off"],
+        "immutable/no-let": ["error"],
+        "immutable/no-this": ["error"],
+        "immutable/no-mutation": ["error"]
       }
     }]
   }

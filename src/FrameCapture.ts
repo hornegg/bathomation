@@ -1,3 +1,6 @@
+/* eslint-disable immutable/no-let */
+/* eslint-disable immutable/no-mutation */
+/* eslint-disable immutable/no-this */
 import JSZip from 'jszip';
 import {saveAs} from 'file-saver';
 
