@@ -1,43 +1,56 @@
 import ReactDOM from 'react-dom';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import * as React from 'react';
-import { Canvas, useFrame } from 'react-three-fiber';
+import { Canvas } from 'react-three-fiber';
+import * as THREE from 'three';
+import { loadGeometry, outlineMaterial, skin } from './common';
+import { BufferGeometry } from 'three';
 
-function Box(props) {
-  // This reference will give us direct access to the mesh
-  const mesh = useRef();
+const cycleLength = 1200; // The number of frames before the animation repeats itself
+const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
+const captureCount = 100; // Number of frames to capture.  Set to zero for no capture
 
-  // Set up state for the hovered and active state
-  const [hovered, setHover] = useState(false);
-  const [active, setActive] = useState(false);
-
-  // Rotate mesh every frame, this is outside of React without overhead
-  useFrame(() => {
-    // eslint-disable-next-line immutable/no-mutation
-    mesh.current.rotation.x = mesh.current.rotation.y += 0.01;
-  });
-
-  return (
-    <mesh
-      {...props}
-      ref={mesh}
-      scale={active ? [1.5, 1.5, 1.5] : [1, 1, 1]}
-      onClick={() => setActive(!active)}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}>
-      <boxBufferGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  );
+interface LoadedGeometryProps {
+  url: string;
+  material: THREE.Material
 }
 
-ReactDOM.render(
-  <Canvas>
-    <ambientLight />
-    <pointLight position={[10, 10, 10]} />
-    <Box position={[-1.2, 0, 0]} />
-    <Box position={[1.2, 0, 0]} />
-  </Canvas>,
+const MeshLoadGeom = (props: LoadedGeometryProps) => {
+
+  const [geometry, setGeometry] = useState<BufferGeometry>(null);
+
+  if (geometry) {
+    return <mesh geometry={geometry} material={props.material}/>;
+  } else {
+    loadGeometry(props.url).then(setGeometry);
+    return <mesh />;
+  }
+
+};
+
+const size = captureCount ? {width: 800, height: 600} : {width: window.innerWidth - 10, height: window.innerHeight - 20};
+
+ReactDOM.render(  
+  <div style={size}>
+    <Canvas>
+      <group>
+        <MeshLoadGeom url="headGeometry.json" material={skin} />
+        <MeshLoadGeom url="outlineHeadGeometry.json" material={outlineMaterial} />
+      </group>
+      <group>
+        <MeshLoadGeom url="bodyGeometry.json" material={skin} />
+        <MeshLoadGeom url="outlineBodyGeometry.json" material={outlineMaterial} />
+      </group>
+      <group>
+        <MeshLoadGeom url="leftFootGeometry.json" material={skin} />
+        <MeshLoadGeom url="outlineLeftFootGeometry.json" material={outlineMaterial} />
+      </group>
+      <group>
+        <MeshLoadGeom url="rightFootGeometry.json" material={skin} />
+        <MeshLoadGeom url="outlineRightFootGeometry.json" material={outlineMaterial} />
+      </group>
+    </Canvas>
+  </div>,
   document.getElementById('root')
 );
 
