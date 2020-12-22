@@ -1,10 +1,9 @@
 import ReactDOM from 'react-dom';
-import { useState } from 'react';
 import * as React from 'react';
 import { Canvas } from 'react-three-fiber';
 import * as THREE from 'three';
 import { loadGeometry, outlineMaterial, skin } from './common';
-import { BufferGeometry } from 'three';
+import { createHead } from './head';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
@@ -17,7 +16,7 @@ interface LoadedGeometryProps {
 
 const MeshLoadGeom = (props: LoadedGeometryProps) => {
 
-  const [geometry, setGeometry] = useState<BufferGeometry>(null);
+  const [geometry, setGeometry] = React.useState<THREE.BufferGeometry>(null);
 
   if (geometry) {
     return <mesh geometry={geometry} material={props.material}/>;
@@ -28,15 +27,23 @@ const MeshLoadGeom = (props: LoadedGeometryProps) => {
 
 };
 
+const Head = () => {
+  const [head, setHead] = React.useState<THREE.Group>(null);
+
+  if (head) {
+    return <primitive object={head} />;
+  } else {
+    createHead().then(setHead);
+    return <group />;
+  }
+};
+
 const size = captureCount ? {width: 800, height: 600} : {width: window.innerWidth - 10, height: window.innerHeight - 20};
 
 ReactDOM.render(  
   <div style={size}>
     <Canvas>
-      <group>
-        <MeshLoadGeom url="headGeometry.json" material={skin} />
-        <MeshLoadGeom url="outlineHeadGeometry.json" material={outlineMaterial} />
-      </group>
+      <Head />
       <group>
         <MeshLoadGeom url="bodyGeometry.json" material={skin} />
         <MeshLoadGeom url="outlineBodyGeometry.json" material={outlineMaterial} />
