@@ -9,33 +9,27 @@ const cycleLength = 1200; // The number of frames before the animation repeats i
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
 const captureCount = 100; // Number of frames to capture.  Set to zero for no capture
 
+const usePromise = <T extends unknown>(promise: Promise<T>) => {
+  const [state, setState] = React.useState<T>(null);
+  if (!state) {
+    promise.then(setState);
+  }
+  return state;
+};
+
 interface LoadedGeometryProps {
   url: string;
   material: THREE.Material
 }
 
 const MeshLoadGeom = (props: LoadedGeometryProps) => {
-
-  const [geometry, setGeometry] = React.useState<THREE.BufferGeometry>(null);
-
-  if (geometry) {
-    return <mesh geometry={geometry} material={props.material}/>;
-  } else {
-    loadGeometry(props.url).then(setGeometry);
-    return <mesh />;
-  }
-
+  const geometry = usePromise(loadGeometry(props.url));
+  return geometry ? <mesh geometry={geometry} material={props.material} /> : <mesh />;
 };
 
 const Head = () => {
-  const [head, setHead] = React.useState<THREE.Group>(null);
-
-  if (head) {
-    return <primitive object={head} />;
-  } else {
-    createHead().then(setHead);
-    return <group />;
-  }
+  const head = usePromise(createHead());
+  return head ?  <primitive object={head} /> : <group />;
 };
 
 const size = captureCount ? {width: 800, height: 600} : {width: window.innerWidth - 10, height: window.innerHeight - 20};
