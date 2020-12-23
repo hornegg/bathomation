@@ -1,7 +1,7 @@
 /* eslint-disable immutable/no-mutation */
 import * as React from 'react';
 import * as THREE from 'three';
-import { useFrame } from 'react-three-fiber';
+import { CanvasContext, useFrame } from 'react-three-fiber';
 
 interface FrameLimiterProps {
   fps: number;
@@ -10,12 +10,13 @@ interface FrameLimiterProps {
 const FrameLimiter = (props: FrameLimiterProps): JSX.Element => {
   const [clock] = React.useState(new THREE.Clock());
 
-  useFrame((state) => {
+  useFrame((state: CanvasContext) => {
     state.ready = false;
     const timeUntilNextFrame = (1000 / props.fps) - clock.getDelta();
 
     setTimeout(() => {
       state.ready = true;
+      state.invalidate();
     }, Math.max(0, timeUntilNextFrame));
 
   });
@@ -23,4 +24,4 @@ const FrameLimiter = (props: FrameLimiterProps): JSX.Element => {
   return <></>;
 };
 
-export default FrameLimiter;
+export default FrameLimiter;  
