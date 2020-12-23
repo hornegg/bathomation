@@ -9,6 +9,7 @@ import {
   linearMap,
   loadGeometry,
   outlineMaterial,
+  QUARTER_PI,
   skin,
 } from './common';
 import { createHead } from './head';
@@ -92,7 +93,17 @@ Promise.all([
     const Body = () => {
       const [state, setState] = React.useState(choreograph(0));
 
-      useFrame(() => setState(choreograph(state.frame + 1)));
+      useFrame((frameState) => {
+
+        // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
+        if (frameState.camera.position.x === 0) {
+          frameState.camera.position.setFromSphericalCoords(5, HALF_PI, QUARTER_PI);
+          frameState.camera.lookAt(0, 0, 0);
+        }
+
+        // Now update the body position based on what frame number this is
+        setState(choreograph(state.frame + 1));
+      });
 
       return (
         <group>
