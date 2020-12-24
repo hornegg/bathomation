@@ -39,15 +39,14 @@ Promise.all([
     rightFootGeometry,
     outlineRightFootGeometry,
   ]) => {
-
-    interface BodyState {
+    interface MainState {
       frame: number;
       bodyAngle: number;
       leftFootAngle: number;
       rightFootAngle: number;
     }
 
-    const choreograph = (frame: number): BodyState => {
+    const choreograph = (frame: number): MainState => {
       const watchTowerLength = cycleLength / 4;
       const pentagramLength = (2 * watchTowerLength) / 3;
       const midStepLength = linearMap(
@@ -92,14 +91,17 @@ Promise.all([
       };
     };
 
-    const Body = () => {
+    const Main = () => {
       const [state, setState] = React.useState(choreograph(0));
 
       useFrame((frameState) => {
-
         // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
         if (frameState.camera.position.x === 0) {
-          frameState.camera.position.setFromSphericalCoords(5, HALF_PI, QUARTER_PI);
+          frameState.camera.position.setFromSphericalCoords(
+            5,
+            HALF_PI,
+            QUARTER_PI
+          );
           frameState.camera.lookAt(0, 0, 0);
         }
 
@@ -107,20 +109,41 @@ Promise.all([
         setState(choreograph(state.frame + 1));
       });
 
+      const Body = () => (
+        <group rotation={new THREE.Euler(0, state.bodyAngle, 0)}>
+          <primitive object={head} />
+          <mesh geometry={bodyGeometry} material={skin} />
+          <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
+        </group>
+      );
+
+      const LeftFoot = () => (
+        <group rotation={new THREE.Euler(0, state.leftFootAngle, 0)}>
+          <mesh geometry={leftFootGeometry} material={skin} />
+          <mesh geometry={outlineLeftFootGeometry} material={outlineMaterial} />
+        </group>
+      );
+
+      const RightFoot = () => (
+        <group rotation={new THREE.Euler(0, state.rightFootAngle, 0)}>
+          <mesh geometry={rightFootGeometry} material={skin} />
+          <mesh
+            geometry={outlineRightFootGeometry}
+            material={outlineMaterial}
+          />
+        </group>
+      );
+
       return (
         <group>
-          <group rotation={new THREE.Euler(0, state.bodyAngle, 0)}>
-            <primitive object={head}/>
-            <mesh geometry={bodyGeometry} material={skin} />
-            <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          </group>
-          <group rotation={new THREE.Euler(0, state.leftFootAngle, 0)}>
-            <mesh geometry={leftFootGeometry} material={skin} />
-            <mesh geometry={outlineLeftFootGeometry} material={outlineMaterial} />
-          </group>
-          <group rotation={new THREE.Euler(0, state.rightFootAngle, 0)}>
-            <mesh geometry={rightFootGeometry} material={skin} />
-            <mesh geometry={outlineRightFootGeometry} material={outlineMaterial} />
+          <Body />
+          <LeftFoot />
+          <RightFoot />
+          <group>
+            <Pentagram angle={0} />
+            <Pentagram angle={HALF_PI} />
+            <Pentagram angle={PI} />
+            <Pentagram angle={PI + HALF_PI} />
           </group>
         </group>
       );
@@ -134,11 +157,7 @@ Promise.all([
       <div style={size}>
         <Canvas>
           <FrameLimiter fps={30} />
-          <Body />
-          <Pentagram angle={0}/>
-          <Pentagram angle={HALF_PI}/>
-          <Pentagram angle={PI}/>
-          <Pentagram angle={PI + HALF_PI}/>
+          <Main />
         </Canvas>
       </div>,
       document.getElementById('root')
