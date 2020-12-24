@@ -5,7 +5,7 @@ import { createFrameTimingTool } from './frameTimingTool';
 import FrameCapture from './FrameCapture';
 import { createHead } from './head';
 import { skin, loadGeometry, outlineMaterial, linearMap, boundedMap, QUARTER_PI, HALF_PI, PI } from './common';
-import { createPentagram } from './pentagram';
+import { createPentagram } from './pentagramOld';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture

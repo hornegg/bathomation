@@ -9,11 +9,13 @@ import {
   linearMap,
   loadGeometry,
   outlineMaterial,
+  PI,
   QUARTER_PI,
   skin,
 } from './common';
 import { createHead } from './head';
 import FrameLimiter from './FrameLimiter';
+import Pentagram from './pentagram';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
 const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
@@ -133,6 +135,10 @@ Promise.all([
         <Canvas>
           <FrameLimiter fps={30} />
           <Body />
+          <Pentagram angle={0}/>
+          <Pentagram angle={HALF_PI}/>
+          <Pentagram angle={PI}/>
+          <Pentagram angle={PI + HALF_PI}/>
         </Canvas>
       </div>,
       document.getElementById('root')
