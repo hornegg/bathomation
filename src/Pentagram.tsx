@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
-import { linearMap, TWO_PI } from './common';
+import { HALF_PI, linearMap, PI, TWO_PI } from './common';
 import { useFrame } from 'react-three-fiber';
 
 const textureLoader = new THREE.TextureLoader();
@@ -26,7 +26,7 @@ interface PentagramProps {
 }
 
 const Pentagram = (props: PentagramProps): JSX.Element => {
-  const flameCount = 5;
+  const flameCount = 30;
 
   const [state, setState] = React.useState<PentagramState>({
     frame: 0,
@@ -38,21 +38,37 @@ const Pentagram = (props: PentagramProps): JSX.Element => {
     setState({ ...state, frame: state.frame + 1 });
   });
 
-  const getPosition = (index) => {
-    const theta = linearMap(index, 0, flameCount, 0, TWO_PI);
+  const getPointOnPentagon = (n: number) => {
+    const invert = false;
+    const angle = (4 * PI * n / 5) + (invert ? -HALF_PI : HALF_PI);
     const radius = 1;
-
+  
     return new THREE.Vector3(
       -2,
-      radius * Math.sin(theta),
-      radius * Math.cos(theta)
+      radius * Math.sin(angle),
+      radius * Math.cos(angle)
+    );
+  };
+  
+  const getPointOnPentagram = (v: number) => {
+    const sideStart = Math.floor(v);
+    const sideEnd = sideStart + 1;
+    const start = getPointOnPentagon(sideStart);
+    const end = getPointOnPentagon(sideEnd);
+
+    return new THREE.Vector3(
+      linearMap(v, sideStart, sideEnd, start.x, end.x),
+      linearMap(v, sideStart, sideEnd, start.y, end.y),
+      linearMap(v, sideStart, sideEnd, start.z, end.z)
     );
   };
 
   return (
     <group rotation={new THREE.Euler(0, props.angle, 0)}>
       {state.fires.map((fire, index) => (
-        <primitive object={fire} key={index} position={getPosition(index)} />
+        <group key={index} position={getPointOnPentagram(5 * index/ state.fires.length)} scale={new THREE.Vector3(0.5, 0.5, 0.5)}>
+          <primitive object={fire} />
+        </group>
       ))}
     </group>
   );

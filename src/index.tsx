@@ -18,7 +18,6 @@ import FrameLimiter from './FrameLimiter';
 import Pentagram from './pentagram';
 
 const cycleLength = 1200; // The number of frames before the animation repeats itself
-const captureOffset = cycleLength; // The number of frames to wait before commencing with any capture
 const captureCount = 100; // Number of frames to capture.  Set to zero for no capture
 
 Promise.all([
@@ -134,17 +133,27 @@ Promise.all([
         </group>
       );
 
+      const Pentagrams = (
+        <group>
+          {[0, HALF_PI, PI, PI + HALF_PI].map((angle, index) => {
+
+            const position = new THREE.Vector3().setFromCylindricalCoords(0.5, angle - HALF_PI, 0);
+
+            return (
+              <group key={index} position={position}>
+                <Pentagram angle={angle} />
+              </group>
+            );
+          })}
+        </group>
+      );
+
       return (
         <group>
           <Body />
           <LeftFoot />
           <RightFoot />
-          <group>
-            <Pentagram angle={0} />
-            <Pentagram angle={HALF_PI} />
-            <Pentagram angle={PI} />
-            <Pentagram angle={PI + HALF_PI} />
-          </group>
+          {Pentagrams}
         </group>
       );
     };
