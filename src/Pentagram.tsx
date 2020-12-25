@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
-import { HALF_PI, linearMap, PI, TWO_PI } from './common';
+import { HALF_PI, linearMap, PI } from './common';
 import { useFrame } from 'react-three-fiber';
 
 const textureLoader = new THREE.TextureLoader();
