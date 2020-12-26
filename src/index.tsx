@@ -99,9 +99,9 @@ Promise.all([
           frameState.camera.position.setFromSphericalCoords(
             5,
             HALF_PI,
-            QUARTER_PI
+            PI + QUARTER_PI
           );
-          frameState.camera.lookAt(0, 0, 0);
+          frameState.camera.lookAt(0, -0.6, 0);
         }
 
         // Now update the body position based on what frame number this is
