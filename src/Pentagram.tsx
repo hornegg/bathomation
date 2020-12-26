@@ -1,10 +1,11 @@
 import * as THREE from 'three';
 import * as React from 'react';
-
+import { useFrame } from 'react-three-fiber';
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
+
 import { HALF_PI, linearMap, PI } from './common';
-import { useFrame } from 'react-three-fiber';
+import settings from './settings';
 
 const textureLoader = new THREE.TextureLoader();
 const tex = textureLoader.load('./THREE.Fire/Fire.png');
@@ -23,6 +24,8 @@ interface PentagramState {
 
 interface PentagramProps {
   angle: number;
+  startFrame: number;
+  endFrame: number;
 }
 
 const Pentagram = (props: PentagramProps): JSX.Element => {
@@ -39,8 +42,7 @@ const Pentagram = (props: PentagramProps): JSX.Element => {
   });
 
   const getPointOnPentagon = (n: number) => {
-    const invert = false;
-    const angle = (4 * PI * n / 5) + (invert ? -HALF_PI : HALF_PI);
+    const angle = (4 * PI * n / 5) + (settings.invertPentagrams ? -HALF_PI : HALF_PI);
     const radius = 1;
   
     return new THREE.Vector3(

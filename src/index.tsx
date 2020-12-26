@@ -16,9 +16,10 @@ import {
 import { createHead } from './head';
 import FrameLimiter from './FrameLimiter';
 import Pentagram from './pentagram';
+import settings from './settings';
 
-const cycleLength = 1200; // The number of frames before the animation repeats itself
-const captureCount = 100; // Number of frames to capture.  Set to zero for no capture
+const watchTowerLength = settings.cycleLength / 4;
+const pentagramLength = (2 * watchTowerLength) / 3;
 
 Promise.all([
   createHead(),
@@ -46,8 +47,6 @@ Promise.all([
     }
 
     const choreograph = (frame: number): MainState => {
-      const watchTowerLength = cycleLength / 4;
-      const pentagramLength = (2 * watchTowerLength) / 3;
       const midStepLength = linearMap(
         0.5,
         0,
@@ -56,7 +55,7 @@ Promise.all([
         watchTowerLength
       );
 
-      const cycleFrame = frame % cycleLength;
+      const cycleFrame = frame % settings.cycleLength;
       const watchTower = 3 - Math.floor(cycleFrame / watchTowerLength);
       const watchTowerFrame = cycleFrame % watchTowerLength;
 
@@ -135,13 +134,16 @@ Promise.all([
 
       const Pentagrams = (
         <group>
-          {[0, HALF_PI, PI, PI + HALF_PI].map((angle, index) => {
+          {[0, 1, 2, 3].map((watchTowerIndex) => {
 
+            const angle = watchTowerIndex * HALF_PI;
             const position = new THREE.Vector3().setFromCylindricalCoords(0.5, angle - HALF_PI, 0);
+            const startFrame = watchTowerIndex * watchTowerLength;
+            const endFrame = startFrame + pentagramLength;
 
             return (
-              <group key={index} position={position}>
-                <Pentagram angle={angle} />
+              <group key={watchTowerIndex} position={position}>
+                <Pentagram angle={angle} startFrame={startFrame} endFrame={endFrame}/>
               </group>
             );
           })}
@@ -158,7 +160,7 @@ Promise.all([
       );
     };
 
-    const size = captureCount
+    const size = settings.frameCapture
       ? { width: 800, height: 600 }
       : { width: window.innerWidth - 10, height: window.innerHeight - 20 };
 
