@@ -7,6 +7,35 @@ import './THREE.Fire/FireShader';
 import { boundedMap, HALF_PI, linearMap, PI } from './common';
 import settings from './settings';
 
+const getPointOnPentagon = (pt: number) => {
+
+  // map the point so the drawing starts in the right place
+  const n = (pt - 1) % 5;
+
+  const angle =
+    (4 * PI * n) / 5 + (settings.invertPentagrams ? -HALF_PI : HALF_PI);
+  const radius = 1.5;
+
+  return new THREE.Vector3(
+    -2,
+    radius * Math.sin(angle),
+    radius * Math.cos(angle)
+  );
+};
+
+export const getPointOnPentagram = (v: number): THREE.Vector3 => {
+  const sideStart = Math.floor(v);
+  const sideEnd = sideStart + 1;
+  const start = getPointOnPentagon(sideStart);
+  const end = getPointOnPentagon(sideEnd);
+
+  return new THREE.Vector3(
+    linearMap(v, sideStart, sideEnd, start.x, end.x),
+    linearMap(v, sideStart, sideEnd, start.y, end.y),
+    linearMap(v, sideStart, sideEnd, start.z, end.z)
+  );
+};
+
 const textureLoader = new THREE.TextureLoader();
 const tex = textureLoader.load('./THREE.Fire/Fire.png');
 
@@ -30,7 +59,7 @@ interface PentagramProps {
   endFrame: number;
 }
 
-const Pentagram = (props: PentagramProps): JSX.Element => {
+export const Pentagram = (props: PentagramProps): JSX.Element => {
   const flameCount = 46;
 
   const [state, setState] = React.useState<PentagramState>({
@@ -72,35 +101,6 @@ const Pentagram = (props: PentagramProps): JSX.Element => {
     setState({ ...state, frame: (state.frame + 1) % settings.cycleLength });
   });
 
-  const getPointOnPentagon = (pt: number) => {
-
-    // map the point so the drawing starts in the right place
-    const n = (pt - 1) % 5;
-
-    const angle =
-      (4 * PI * n) / 5 + (settings.invertPentagrams ? -HALF_PI : HALF_PI);
-    const radius = 1.5;
-
-    return new THREE.Vector3(
-      -2,
-      radius * Math.sin(angle),
-      radius * Math.cos(angle)
-    );
-  };
-
-  const getPointOnPentagram = (v: number) => {
-    const sideStart = Math.floor(v);
-    const sideEnd = sideStart + 1;
-    const start = getPointOnPentagon(sideStart);
-    const end = getPointOnPentagon(sideEnd);
-
-    return new THREE.Vector3(
-      linearMap(v, sideStart, sideEnd, start.x, end.x),
-      linearMap(v, sideStart, sideEnd, start.y, end.y),
-      linearMap(v, sideStart, sideEnd, start.z, end.z)
-    );
-  };
-
   if ((props.startFrame <= state.frame) && (state.frame <= props.endFrame)) {
 
     const scale = 0.4;
@@ -123,4 +123,3 @@ const Pentagram = (props: PentagramProps): JSX.Element => {
   }
 };
 
-export default Pentagram;

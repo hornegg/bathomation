@@ -15,7 +15,7 @@ import {
 } from './common';
 import { createHead } from './head';
 import FrameLimiter from './FrameLimiter';
-import Pentagram from './pentagram';
+import { Pentagram } from './pentagram';
 import settings from './settings';
 
 const watchTowerLength = settings.cycleLength / 4;
