@@ -79,7 +79,7 @@ const Pentagram = (props: PentagramProps): JSX.Element => {
 
     const angle =
       (4 * PI * n) / 5 + (settings.invertPentagrams ? -HALF_PI : HALF_PI);
-    const radius = 1;
+    const radius = 1.5;
 
     return new THREE.Vector3(
       -2,
