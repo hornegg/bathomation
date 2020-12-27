@@ -167,7 +167,7 @@ Promise.all([
     ReactDOM.render(
       <div style={size}>
         <Canvas>
-          <FrameLimiter fps={30} />
+          <FrameLimiter fps={30} logger={console.log}/>
           <Main />
         </Canvas>
       </div>,
