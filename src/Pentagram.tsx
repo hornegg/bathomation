@@ -37,8 +37,10 @@ const Pentagram = (props: PentagramProps): JSX.Element => {
   });
 
   useFrame(() => {
-    state.fires.forEach((fire) => fire.update(state.frame / 25));
-    setState({ ...state, frame: state.frame + 1 });
+    if (state.frame >= props.startFrame && state.frame <= props.endFrame) {
+      state.fires.forEach((fire) => fire.update(state.frame / 25));
+    }
+    setState({ ...state, frame: (state.frame + 1) % settings.cycleLength });
   });
 
   const getPointOnPentagon = (n: number) => {

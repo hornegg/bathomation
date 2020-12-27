@@ -136,7 +136,7 @@ Promise.all([
         <group>
           {[0, 1, 2, 3].map((watchTowerIndex) => {
 
-            const angle = watchTowerIndex * HALF_PI;
+            const angle = -watchTowerIndex * HALF_PI;
             const position = new THREE.Vector3().setFromCylindricalCoords(0.5, angle - HALF_PI, 0);
             const startFrame = watchTowerIndex * watchTowerLength;
             const endFrame = startFrame + pentagramLength;
