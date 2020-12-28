@@ -13,9 +13,11 @@ import {
   QUARTER_PI,
   skin,
 } from './common';
+
 import { createHead } from './head';
-import FrameLimiter from './FrameLimiter';
 import { Pentagram } from './pentagram';
+import FrameLimiter from './FrameLimiter';
+import FrameRate from './FrameRate';
 import settings from './settings';
 
 const watchTowerLength = settings.cycleLength / 4;
@@ -167,7 +169,8 @@ Promise.all([
     ReactDOM.render(
       <div style={size}>
         <Canvas>
-          <FrameLimiter fps={30} logger={console.log}/>
+          <FrameLimiter fps={30} />
+          <FrameRate logger={console.log} />
           <Main />
         </Canvas>
       </div>,
