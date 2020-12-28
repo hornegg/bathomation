@@ -97,6 +97,10 @@ Promise.all([
       useFrame((frameState) => {
         // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
         if (frameState.camera.position.x === 0) {
+
+          // eslint-disable-next-line immutable/no-mutation
+          frameState.scene.background = new THREE.Color('white');
+
           frameState.camera.position.setFromSphericalCoords(
             5,
             HALF_PI,
@@ -137,15 +141,22 @@ Promise.all([
       const Pentagrams = (
         <group>
           {[0, 1, 2, 3].map((watchTowerIndex) => {
-
             const angle = -watchTowerIndex * HALF_PI;
-            const position = new THREE.Vector3().setFromCylindricalCoords(0.5, angle - HALF_PI, 0);
+            const position = new THREE.Vector3().setFromCylindricalCoords(
+              0.5,
+              angle - HALF_PI,
+              0
+            );
             const startFrame = watchTowerIndex * watchTowerLength;
             const endFrame = startFrame + pentagramLength;
 
             return (
               <group key={watchTowerIndex} position={position}>
-                <Pentagram angle={angle} startFrame={startFrame} endFrame={endFrame}/>
+                <Pentagram
+                  angle={angle}
+                  startFrame={startFrame}
+                  endFrame={endFrame}
+                />
               </group>
             );
           })}
@@ -162,9 +173,7 @@ Promise.all([
       );
     };
 
-    const size = settings.frameCapture
-      ? { width: 800, height: 600 }
-      : { width: window.innerWidth - 10, height: window.innerHeight - 20 };
+    const size = { width: 800, height: 600 };
 
     ReactDOM.render(
       <div style={size}>
