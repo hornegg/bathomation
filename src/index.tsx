@@ -19,6 +19,7 @@ import { Pentagram } from './pentagram';
 import FrameLimiter from './components/FrameLimiter';
 import FrameRate from './components/FrameRate';
 import settings from './settings';
+import FrameCapture from './components/FrameCapture';
 
 const watchTowerLength = settings.cycleLength / 4;
 const pentagramLength = (2 * watchTowerLength) / 3;
@@ -97,7 +98,6 @@ Promise.all([
       useFrame((frameState) => {
         // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
         if (frameState.camera.position.x === 0) {
-
           // eslint-disable-next-line immutable/no-mutation
           frameState.scene.background = new THREE.Color('white');
 
@@ -180,6 +180,16 @@ Promise.all([
         <Canvas>
           <FrameLimiter fps={30} />
           <FrameRate logger={console.log} />
+          {settings.frameCapture ? (
+            <FrameCapture
+              startFrame={0}
+              endFrame={settings.cycleLength}
+              filename="frames.zip"
+              getCanvas={() => document.getElementsByTagName('canvas')[0]}
+            />
+          ) : (
+            <></>
+          )}
           <Main />
         </Canvas>
       </div>,
