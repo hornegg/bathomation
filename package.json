@@ -6,7 +6,7 @@
     "hues": "ts-node processing/changeHues.ts",
     "gulp": "gulp",
     "lint": "eslint . --ext .ts --ext .tsx",
-    "parcel": "parcel src/index.html src/direct.html src/THREE.Fire/Fire.png",
+    "parcel": "parcel src/index.html src/THREE.Fire/Fire.png",
     "preinstall": "npx npm-force-resolutions",
     "start": "run-p gulp parcel"
   },
