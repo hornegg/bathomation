@@ -11,7 +11,7 @@ const FrameRate = (props: FrameRateProps): JSX.Element => {
   React.useMemo(() => {
     setInterval(() => {
       setFrameCount(currentFrameCount => {
-        props.logger(currentFrameCount.toString());
+        props.logger(`${currentFrameCount} fps`);
         return 0;
       });
     }, 1000);
