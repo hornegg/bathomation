@@ -26,11 +26,11 @@ export const watchRunNewer = async (params: WatchRunNewerParams): Promise<void> 
         noop()
     );
 
-  gulp.watch(
-    [params.src, ...params.extra],
-    {ignoreInitial: !result},
-    Object.assign(task, {displayName: params.displayName})
-  );
+    gulp.watch(
+      [params.src, ...params.extra],
+      {ignoreInitial: !result},
+      Object.assign(task, {displayName: params.displayName})
+    );
   
 };
 
