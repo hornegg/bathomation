@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import * as gulp from 'gulp';
 import * as run from 'gulp-run';
 import * as noop from 'gulp-noop';
@@ -26,11 +28,11 @@ export const watchRunNewer = async (params: WatchRunNewerParams): Promise<void> 
         noop()
     );
 
-    gulp.watch(
-      [params.src, ...params.extra],
-      {ignoreInitial: !result},
-      Object.assign(task, {displayName: params.displayName})
-    );
+  gulp.watch(
+    [params.src, ...params.extra],
+    {ignoreInitial: !result},
+    Object.assign(task, {displayName: params.displayName})
+  );
   
 };
 
@@ -39,9 +41,12 @@ interface WatchRunScriptNewerParams extends CommonParams {
 }
 
 export const watchRunScriptNewer = (params: WatchRunScriptNewerParams): void => {
+
+  const tsNodePath = path.join('node_modules', '.bin', 'ts-node');
+
   watchRunNewer({
     ...params,
-    cmd: `node_modules\\.bin\\ts-node.cmd ${params.src} ${[...params.dests, ...params.args].join(' ')}`
+    cmd: `${tsNodePath} ${params.src} ${[...params.dests, ...params.args].join(' ')}`
   });
 };
 
