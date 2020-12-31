@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import * as React from 'react';
-import { Canvas, useFrame } from 'react-three-fiber';
+import { Canvas, CanvasContext, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 
 import {
@@ -95,18 +95,19 @@ Promise.all([
     const Main = () => {
       const [state, setState] = React.useState(choreograph(0));
 
-      useFrame((frameState) => {
+      useFrame((canvasContext: CanvasContext) => {
         // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
-        if (frameState.camera.position.x === 0) {
+        if (state.frame === 0) {
+          console.log('first time');
           // eslint-disable-next-line immutable/no-mutation
-          frameState.scene.background = new THREE.Color('white');
+          canvasContext.scene.background = new THREE.Color('white');
 
-          frameState.camera.position.setFromSphericalCoords(
+          canvasContext.camera.position.setFromSphericalCoords(
             5,
             HALF_PI,
             PI + QUARTER_PI
           );
-          frameState.camera.lookAt(0, -0.6, 0);
+          canvasContext.camera.lookAt(0, -0.6, 0);
         }
 
         // Now update the body position based on what frame number this is
