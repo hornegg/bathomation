@@ -35,6 +35,11 @@ const FrameCapture = (props: FrameCaptureProps): JSX.Element => {
           state.zip.generateAsync({ type: 'blob' }).then((content) => {
             saveAs(content, props.filename);
           });
+
+          // The requested capture is complete.  Stop the animation to free up resources for processing the zip file
+          
+          // eslint-disable-next-line immutable/no-mutation
+          canvasContext.ready = false; 
         }
       });
     }
