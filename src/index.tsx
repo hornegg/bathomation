@@ -98,7 +98,6 @@ Promise.all([
       useFrame((canvasContext: CanvasContext) => {
         // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
         if (state.frame === 0) {
-          console.log('first time');
           // eslint-disable-next-line immutable/no-mutation
           canvasContext.scene.background = new THREE.Color('white');
 
