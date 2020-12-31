@@ -113,7 +113,7 @@ const postProcessing = async () => {
   const zipFilename = path.resolve('dist/frames.zip');
   const rawFramesPath = path.resolve('dist/rawFrames');
   const framesParam = path.resolve('dist/rawFrames/f%06d.png');
-  const videoPath = path.resolve('dist/bathomation.mp4');
+  const videoPath = path.resolve('dist/baphomation.mp4');
   const ffmpegPath = path.join('node_modules', 'ffmpeg-static', 'ffmpeg');
   const result: boolean = await newer([zipFilename], [videoPath]);
 

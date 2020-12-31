@@ -1,5 +1,5 @@
 {
-  "name": "bathomation",
+  "name": "baphomation",
   "version": "1.0.0",
   "scripts": {
     "build": "parcel build src/index.html src/THREE.Fire/Fire.png",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hornegg/bathomation.git"
+    "url": "git+https://github.com/hornegg/baphomation.git"
   },
   "author": "hornegg",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hornegg/bathomation/issues"
+    "url": "https://github.com/hornegg/baphomation/issues"
   },
-  "homepage": "https://github.com/hornegg/bathomation#readme",
+  "homepage": "https://github.com/hornegg/baphomation#readme",
   "dependencies": {
     "@types/file-saver": "^2.0.1",
     "@types/gulp": "^4.0.7",
