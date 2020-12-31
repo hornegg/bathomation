@@ -42,11 +42,18 @@ Promise.all([
     rightFootGeometry,
     outlineRightFootGeometry,
   ]) => {
+    interface LayerInfo {
+      topFlames: boolean;
+      baphomet: boolean;
+      bottomFlames: boolean;
+    }
+
     interface MainState {
       frame: number;
       bodyAngle: number;
       leftFootAngle: number;
       rightFootAngle: number;
+      layerInfo: LayerInfo;
     }
 
     const choreograph = (frame: number): MainState => {
@@ -84,11 +91,22 @@ Promise.all([
         (watchTower - 1) * HALF_PI
       );
 
+      const layer = Math.floor(frame / settings.cycleLength) % 3;
+
+      const layerInfo = settings.frameCapture
+        ? {
+            topFlames: layer === 0,
+            baphomet: layer === 1,
+            bottomFlames: layer === 2,
+          }
+        : { topFlames: true, baphomet: true, bottomFlames: true };
+
       return {
         frame,
         bodyAngle,
         leftFootAngle,
         rightFootAngle,
+        layerInfo,
       };
     };
 
@@ -138,9 +156,14 @@ Promise.all([
         </group>
       );
 
+      const watchtowers = [
+        ...(state.layerInfo.topFlames ? [0, 1] : []),
+        ...(state.layerInfo.bottomFlames ? [2, 3] : []),
+      ];
+
       const Pentagrams = (
         <group>
-          {[0, 1, 2, 3].map((watchTowerIndex) => {
+          {watchtowers.map((watchTowerIndex) => {
             const angle = -watchTowerIndex * HALF_PI;
             const position = new THREE.Vector3().setFromCylindricalCoords(
               0.5,
@@ -163,11 +186,17 @@ Promise.all([
         </group>
       );
 
-      return (
+      const baphomet = (
         <group>
           <Body />
           <LeftFoot />
           <RightFoot />
+        </group>
+      );
+
+      return (
+        <group>
+          {state.layerInfo.baphomet ? baphomet : <></>}
           {Pentagrams}
         </group>
       );
@@ -183,7 +212,7 @@ Promise.all([
           {settings.frameCapture ? (
             <FrameCapture
               startFrame={0}
-              endFrame={settings.cycleLength}
+              endFrame={settings.cycleLength * 3}
               filename="frames.zip"
               getCanvas={() => document.getElementsByTagName('canvas')[0]}
             />
