@@ -1,10 +1,38 @@
 import * as path from 'path';
+import { performance } from 'perf_hooks';
 
 import { times } from 'lodash';
 import * as pLimit from 'p-limit';
 
 import { p5, readPng, writePng } from './p5Headless';
 import settings from '../src/settings';
+
+const usage = 'usage: ts-node postProcessing.ts [offset] [frameCount]';
+
+if (process.argv.length !== 4) {
+  console.error(usage);
+  console.error();
+  process.exit(1);
+}
+
+const offset = parseInt(process.argv[2]);
+const frameCount = parseInt(process.argv[3]);
+
+if (isNaN(offset)) {
+  console.error(usage);
+  console.error('offset is not a number');
+  console.error();
+  process.exit(1);
+}
+
+if (isNaN(frameCount)) {
+  console.error(usage);
+  console.error('frameCount is not a number');
+  console.error();
+  process.exit(1);
+}
+
+const start = performance.now();
 
 const inputDir = path.resolve(path.join(__dirname, '..', 'dist', 'rawFrames'));
 const outputDir = path.resolve(path.join(__dirname, '..', 'dist', 'frames'));
@@ -20,7 +48,7 @@ const getInputFrameFilename = (frame: number) =>
 const getOutputFrameFilename = (frame: number) =>
   path.join(outputDir, getFrameFilename(frame));
 
-const limit = pLimit(16);
+const limit = pLimit(8);
 
 new p5((p: p5) => {
   const changeHues = (img: p5.Image, adjustment: number) => {
@@ -45,8 +73,9 @@ new p5((p: p5) => {
 
   // eslint-disable-next-line immutable/no-mutation
   p.setup = async () => {
-    const framePromises = times(settings.cycleLength, (frame) => limit(() =>
-      Promise.all([
+    const framePromises = times(frameCount, (index) => limit(() => {
+      const frame = offset + index;
+      return Promise.all([
         readPng(getInputFrameFilename(frame)),
         readPng(getInputFrameFilename(frame + settings.cycleLength)),
         readPng(
@@ -61,10 +90,15 @@ new p5((p: p5) => {
         g.image(baphomet, 0, 0);
         g.image(topFlames, 0, 0);
         return writePng(g, getOutputFrameFilename(frame));
-      })
-    ));
+      });
+    }));
 
     await Promise.all(framePromises);
+
+    const end = performance.now();
+
+    console.log(`Post-processed frames ${offset} to ${offset + frameCount - 1} in ${((end - start) / 1000).toFixed(1)} seconds`);
+
     process.exit(0);
 
     /*

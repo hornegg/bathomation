@@ -2,8 +2,11 @@ import * as path from 'path';
 import { promisify } from 'util';
 import { exec as execOrig } from 'child_process';
 import * as fs from 'fs/promises';
+import * as os from 'os';
 
 import * as gulp from 'gulp';
+import * as pLimit from 'p-limit';
+import { times } from 'lodash';
 
 import { newer } from './gulp/newer';
 import { watchRunScriptNewer } from './gulp/watchRunNewer';
@@ -118,6 +121,10 @@ const postProcessing = async () => {
   const videoPath = path.resolve('dist/baphomation.mp4');
   const ffmpegPath = path.join('node_modules', 'ffmpeg-static', 'ffmpeg');
   const tsNodePath = path.join('node_modules', '.bin', 'ts-node');
+  const batchSize = 32;
+  const limit = pLimit(os.cpus().length);
+  const batches = Math.ceil(settings.cycleLength / batchSize);
+  const lexec = (cmd) => limit(() => exec(cmd));
 
   const result: boolean = await newer([zipFilename], [videoPath]);
 
@@ -126,7 +133,13 @@ const postProcessing = async () => {
     await exec(`rimraf ${framesPath}`);
     await fs.mkdir(framesPath);
     await exec(`extract-zip ${zipFilename} ${rawFramesPath}`);
-    await exec(`${tsNodePath} processing/postProcessing.ts`);
+
+    await Promise.all(times(batches, batch => {
+      const offset = batch * batchSize;
+      const thisBatchSize = Math.min(batchSize, settings.cycleLength - offset - 1);
+      return lexec(`${tsNodePath} processing/postProcessing.ts ${offset} ${thisBatchSize}`);
+    }));
+
     await exec(
       `${ffmpegPath} -framerate ${settings.fps} -i ${framesParam} ${videoPath}`
     );

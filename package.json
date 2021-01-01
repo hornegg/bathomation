@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "parcel build src/index.html src/THREE.Fire/Fire.png",
-    "pp": "ts-node processing/postProcessing.ts",
+    "pp": "ts-node processing/postProcessing.ts 0 32",
     "gulp": "gulp",
     "lint": "eslint . --ext .ts --ext .tsx",
     "parcel": "parcel src/index.html src/THREE.Fire/Fire.png",
