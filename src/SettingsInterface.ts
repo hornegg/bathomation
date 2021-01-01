@@ -5,6 +5,8 @@ export interface WatchTowers {
 }
 
 export interface SettingsInterface {
+  width: number;
+  height: number;
   cycleLength: number; // The number of frames before the animation repeats itself
   fps: number; // Frames per second
   frameCapture: boolean;

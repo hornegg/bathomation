@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { promisify } from 'util';
 import { exec as execOrig } from 'child_process';
+import * as fs from 'fs/promises';
 
 import * as gulp from 'gulp';
 
@@ -112,14 +113,20 @@ const defaultTask = (callback: () => void): void => {
 const postProcessing = async () => {
   const zipFilename = path.resolve('dist/frames.zip');
   const rawFramesPath = path.resolve('dist/rawFrames');
-  const framesParam = path.resolve('dist/rawFrames/f%06d.png');
+  const framesPath = path.resolve('dist/frames');
+  const framesParam = path.join(framesPath, 'f%06d.png');
   const videoPath = path.resolve('dist/baphomation.mp4');
   const ffmpegPath = path.join('node_modules', 'ffmpeg-static', 'ffmpeg');
+  const tsNodePath = path.join('node_modules', '.bin', 'ts-node');
+
   const result: boolean = await newer([zipFilename], [videoPath]);
 
   const task = async () => {
     await exec(`rimraf ${rawFramesPath}/*`);
+    await exec(`rimraf ${framesPath}`);
+    await fs.mkdir(framesPath);
     await exec(`extract-zip ${zipFilename} ${rawFramesPath}`);
+    await exec(`${tsNodePath} processing/postProcessing.ts`);
     await exec(
       `${ffmpegPath} -framerate ${settings.fps} -i ${framesParam} ${videoPath}`
     );

@@ -116,9 +116,6 @@ Promise.all([
       useFrame((canvasContext: CanvasContext) => {
         // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
         if (state.frame === 0) {
-          // eslint-disable-next-line immutable/no-mutation
-          canvasContext.scene.background = new THREE.Color('white');
-
           canvasContext.camera.position.setFromSphericalCoords(
             5,
             HALF_PI,
@@ -202,7 +199,7 @@ Promise.all([
       );
     };
 
-    const size = { width: 800, height: 600 };
+    const size = { width: settings.width, height: settings.height };
 
     ReactDOM.render(
       <div style={size}>
