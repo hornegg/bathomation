@@ -24,7 +24,13 @@ const readPng = (filename) => {
       const img = new p5.Image();
       img.resize(this.width, this.height);
       img.loadPixels();
-      img.pixels = Array.from(this.data);
+    
+      Array.from(this.data).forEach((value, index) => {
+        if (index < img.pixels.length) {
+          img.pixels[index] = value;
+        }
+      });
+    
       img.updatePixels();
       resolve(img);
     });
@@ -39,8 +45,15 @@ const readPngSync = (filename) => {
   const img = new p5.Image();
   img.resize(png.width, png.height);
   img.loadPixels();
-  img.pixels = Array.from(this.data);
+
+  Array.from(png.data).forEach((value, index) => {
+    if (index < img.pixels.length) {
+      img.pixels[index] = value;
+    }
+  });
+
   img.updatePixels();
+
   return img;
 };
 
