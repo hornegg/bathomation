@@ -87,7 +87,7 @@ new p5((p: p5) => {
 
       const watchTowerLength = settings.cycleLength / 4;
       const cycleFrame = frame % settings.cycleLength;
-      const watchTowerIndex = 3 - Math.floor(cycleFrame / watchTowerLength);
+      const watchTowerIndex = Math.floor(cycleFrame / watchTowerLength);
       const watchTowerColor = settings.watchTowers.color[watchTowerIndex];
 
       return Promise.all([
