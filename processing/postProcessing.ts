@@ -34,6 +34,13 @@ if (isNaN(frameCount)) {
 
 const start = performance.now();
 
+const hueAdjustments = {
+  blue: 212,
+  green: 60,
+  yellow: 12,
+  red: -16
+};
+
 const inputDir = path.resolve(path.join(__dirname, '..', 'dist', 'rawFrames'));
 const outputDir = path.resolve(path.join(__dirname, '..', 'dist', 'frames'));
 
@@ -60,10 +67,11 @@ new p5((p: p5) => {
         const oldHue = p.hue(oldColor);
         const s = p.saturation(oldColor);
         const b = p.brightness(oldColor);
+        const a = p.alpha(oldColor);
 
         const newHue = oldHue + adjustment;
         p.colorMode(p.HSB);
-        const newColor = p.color(newHue, s, b);
+        const newColor = p.color(newHue, s, b, a);
         img.set(x, y, newColor);
       });
     });
@@ -74,7 +82,14 @@ new p5((p: p5) => {
   // eslint-disable-next-line immutable/no-mutation
   p.setup = async () => {
     const framePromises = times(frameCount, (index) => limit(() => {
+
       const frame = offset + index;
+
+      const watchTowerLength = settings.cycleLength / 4;
+      const cycleFrame = frame % settings.cycleLength;
+      const watchTowerIndex = 3 - Math.floor(cycleFrame / watchTowerLength);
+      const watchTowerColor = settings.watchTowers.color[watchTowerIndex];
+
       return Promise.all([
         readPng(getInputFrameFilename(frame)),
         readPng(getInputFrameFilename(frame + settings.cycleLength)),
@@ -84,6 +99,11 @@ new p5((p: p5) => {
           )
         ),
       ]).then(([topFlames, baphomet, bottomFlames]) => {
+
+        const hueAdjustment = hueAdjustments[watchTowerColor] ? hueAdjustments[watchTowerColor] : 0;
+        changeHues(topFlames, hueAdjustment);
+        changeHues(bottomFlames, hueAdjustment);
+
         const g = p.createGraphics(settings.width, settings.height);
         g.background(255);
         g.image(bottomFlames, 0, 0);
@@ -101,25 +121,5 @@ new p5((p: p5) => {
 
     process.exit(0);
 
-    /*
-    const src = path.join(__dirname, '../src/THREE.Fire/Fire.png');
-
-    const imgBlue = readPngSync(src);
-    const imgGreen = readPngSync(src);
-    const imgYellow = readPngSync(src);
-    const imgRed = readPngSync(src);
-
-    changeHues(imgBlue, 212);
-    writePngSync(imgBlue, path.join(__dirname, '/../dist/blueFire.png'));
-
-    changeHues(imgGreen, 60);
-    writePngSync(imgGreen, path.join(__dirname, '/../dist/greenFire.png'));
-
-    changeHues(imgYellow, 12);
-    writePngSync(imgYellow, path.join(__dirname, '/../dist/yellowFire.png'));
-
-    changeHues(imgRed, -16);
-    writePngSync(imgRed, path.join(__dirname, '/../dist/redFire.png'));
-*/
   };
 });
