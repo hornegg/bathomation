@@ -71,6 +71,7 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
 
     state.fires.forEach((fire, index) => {
 
+      const flare = linearMap(0.8, 0, 1, props.startFrame, props.endFrame);
       const beginningOfEnd = linearMap(0.9, 0, 1, props.startFrame, props.endFrame);
       const complete = linearMap(0.5, 0, 1, props.startFrame, props.endFrame);
       const flameStart = linearMap(index, 0, state.fires.length, props.startFrame, complete);
@@ -81,9 +82,13 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
       const minGain = 0.5;
       const maxGain = 5;
 
+      const mid = 0.06;
+      const midMagnitude = linearMap(mid, 0, 1, minMagnitude, maxMagnitude);
+      const midGain = linearMap(mid, 0, 1, minGain, maxGain);
+
       /* eslint-disable immutable/no-mutation */
       if (state.frame >= props.startFrame && state.frame <= props.endFrame) {
-        if (state.frame >= beginningOfEnd) {
+        if (state.frame >= flare) {
           // Fade out
           const ratio = Math.pow(boundedMap(state.frame, beginningOfEnd, props.endFrame, 0, 1), 5);
           fire.material.uniforms.magnitude.value = linearMap(ratio, 0, 1, minMagnitude, maxMagnitude);
@@ -91,8 +96,8 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
         } else {
           // Fade in
           const ratio = Math.pow(boundedMap(state.frame, flameStart, flameComplete, 0, 1), 2);
-          fire.material.uniforms.magnitude.value = boundedMap(ratio, 0, 1, maxMagnitude, minMagnitude);
-          fire.material.uniforms.gain.value = boundedMap(ratio, 0, 1, maxGain, minGain);
+          fire.material.uniforms.magnitude.value = boundedMap(ratio, 0, 1, maxMagnitude, midMagnitude);
+          fire.material.uniforms.gain.value = boundedMap(ratio, 0, 1, maxGain, midGain);
         }
       /* eslint-enable immutable/no-mutation */
 
