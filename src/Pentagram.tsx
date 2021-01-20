@@ -60,7 +60,7 @@ interface PentagramProps {
 }
 
 export const Pentagram = (props: PentagramProps): JSX.Element => {
-  const flameCount = 46;
+  const flameCount = settings.frameCapture ? 196 : 31;
 
   const [state, setState] = React.useState<PentagramState>({
     frame: 0,
@@ -81,18 +81,20 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
       const minGain = 0.5;
       const maxGain = 5;
 
+      /* eslint-disable immutable/no-mutation */
       if (state.frame >= props.startFrame && state.frame <= props.endFrame) {
         if (state.frame >= beginningOfEnd) {
-          // eslint-disable-next-line immutable/no-mutation
-          fire.material.uniforms.magnitude.value = boundedMap(state.frame, beginningOfEnd, props.endFrame, minMagnitude, maxMagnitude);
-          // eslint-disable-next-line immutable/no-mutation
-          fire.material.uniforms.gain.value = boundedMap(state.frame, beginningOfEnd, props.endFrame, minGain, maxGain);
+          // Fade out
+          const ratio = Math.pow(boundedMap(state.frame, beginningOfEnd, props.endFrame, 0, 1), 5);
+          fire.material.uniforms.magnitude.value = linearMap(ratio, 0, 1, minMagnitude, maxMagnitude);
+          fire.material.uniforms.gain.value = boundedMap(ratio, 0, 1, minGain, maxGain);
         } else {
-          // eslint-disable-next-line immutable/no-mutation
-          fire.material.uniforms.magnitude.value = boundedMap(state.frame, flameStart, flameComplete, maxMagnitude, minMagnitude);
-          // eslint-disable-next-line immutable/no-mutation
-          fire.material.uniforms.gain.value = boundedMap(state.frame, flameStart, flameComplete, maxGain, minGain);
+          // Fade in
+          const ratio = Math.pow(boundedMap(state.frame, flameStart, flameComplete, 0, 1), 2);
+          fire.material.uniforms.magnitude.value = boundedMap(ratio, 0, 1, maxMagnitude, minMagnitude);
+          fire.material.uniforms.gain.value = boundedMap(ratio, 0, 1, maxGain, minGain);
         }
+      /* eslint-enable immutable/no-mutation */
 
         fire.update(state.frame / 25);
       }
