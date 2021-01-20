@@ -21,6 +21,18 @@ export const boundedMap = (value: number, range1start: number, range1end: number
   }
 };
 
+export const segmentedMap = <T extends Array<number>>(value: number, range1: T, range2: T): number => {
+  const n = range1.find(t => t > value);
+  switch (n) {
+  case 0:
+    return range2[0];
+  case undefined:
+    return range2[range2.length - 1];
+  default:
+    return linearMap(value, range1[n - 1], range1[n], range2[n - 1], range2[n]);
+  }
+};
+
 export const headWidth = 1.5;
 export const headHeight = 1;
 export const headDepth = 1;
