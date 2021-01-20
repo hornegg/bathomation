@@ -15,8 +15,8 @@ export const linearMap = (
 ): number => {
   return (
     range2start +
-    (range2end - range2start) *
-      ((value - range1start) / (range1end - range1start))
+    ((range2end - range2start) *
+      ((value - range1start) / (range1end - range1start)))
   );
 };
 
@@ -139,8 +139,8 @@ export const createArc = (param: ArcParameters): THREE.TubeGeometry => {
       const angle = linearMap(t, 0, 1, param.startAngle, param.finishAngle);
       return ellipticalToCartesian(
         1,
-        param.centerTheta + param.thetaRadius * Math.cos(angle),
-        param.centerPhi + param.phiRadius * Math.sin(angle)
+        param.centerTheta + (param.thetaRadius * Math.cos(angle)),
+        param.centerPhi + (param.phiRadius * Math.sin(angle))
       );
     }
   }

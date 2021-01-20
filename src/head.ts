@@ -53,9 +53,9 @@ export const createHead = async (): Promise<THREE.Group> => {
       const angle = TWO_PI * v;
 
       ellipticalToCartesian(
-        1 + param.length * u,
-        param.theta + width * Math.sin(angle),
-        param.phi + depth * Math.cos(angle),
+        1 + (param.length * u),
+        param.theta + (width * Math.sin(angle)),
+        param.phi + (depth * Math.cos(angle)),
         vec
       );
 

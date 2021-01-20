@@ -12,7 +12,7 @@ const FrameLimiter = (props: FrameLimiterProps): JSX.Element => {
 
   useFrame((canvasContext: CanvasContext) => {
     canvasContext.ready = false;
-    const timeUntilNextFrame = 1000 / props.fps - clock.getDelta();
+    const timeUntilNextFrame = (1000 / props.fps) - clock.getDelta();
 
     setTimeout(() => {
       canvasContext.ready = true;

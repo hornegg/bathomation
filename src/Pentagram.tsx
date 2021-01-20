@@ -12,7 +12,7 @@ const getPointOnPentagon = (pt: number) => {
   const n = (pt - 1) % 5;
 
   const angle =
-    (4 * PI * n) / 5 + (settings.invertPentagrams ? -HALF_PI : HALF_PI);
+    ((4 * PI * n) / 5) + (settings.invertPentagrams ? -HALF_PI : HALF_PI);
   const radius = 1.5;
 
   return new THREE.Vector3(
@@ -85,7 +85,7 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
         complete
       );
       const flameComplete =
-        flameStart + (props.endFrame - props.startFrame) / 10;
+        flameStart + ((props.endFrame - props.startFrame) / 10);
 
       const minMagnitude = 1.3;
       const maxMagnitude = 10;

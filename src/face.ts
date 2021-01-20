@@ -36,10 +36,10 @@ export const createFace = (): THREE.Group => {
       const u = v + 2;
 
       return createTube({
-        thetaStart: theta + r * Math.cos(v * FIFTH_TAU),
-        phiStart: phi + r * Math.sin(v * FIFTH_TAU),
-        thetaEnd: theta + r * Math.cos(u * FIFTH_TAU),
-        phiEnd: phi + r * Math.sin(u * FIFTH_TAU),
+        thetaStart: theta + (r * Math.cos(v * FIFTH_TAU)),
+        phiStart: phi + (r * Math.sin(v * FIFTH_TAU)),
+        thetaEnd: theta + (r * Math.cos(u * FIFTH_TAU)),
+        phiEnd: phi + (r * Math.sin(u * FIFTH_TAU)),
         radius: 0.02,
       });
     })

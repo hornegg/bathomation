@@ -29,7 +29,7 @@ footEllipsoid.translate(footCenterX, floorLevel, radius);
 const footEllipsoidBsp = new ThreeBSP(footEllipsoid);
 
 const floorBox = new THREE.BoxGeometry(2, radius, 3);
-floorBox.translate(footCenterX, floorLevel - 0.5 * radius - scalar, 0);
+floorBox.translate(footCenterX, floorLevel - (0.5 * radius) - scalar, 0);
 const floorBoxBsp = new ThreeBSP(floorBox);
 
 const foot: THREE.Geometry = footEllipsoidBsp
