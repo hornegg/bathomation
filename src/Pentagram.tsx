@@ -8,7 +8,6 @@ import { boundedMap, HALF_PI, linearMap, PI } from './common';
 import settings from './settings';
 
 const getPointOnPentagon = (pt: number) => {
-
   // map the point so the drawing starts in the right place
   const n = (pt - 1) % 5;
 
@@ -68,14 +67,25 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
   });
 
   useFrame(() => {
-
     state.fires.forEach((fire, index) => {
-
       const flare = linearMap(0.8, 0, 1, props.startFrame, props.endFrame);
-      const beginningOfEnd = linearMap(0.9, 0, 1, props.startFrame, props.endFrame);
+      const beginningOfEnd = linearMap(
+        0.9,
+        0,
+        1,
+        props.startFrame,
+        props.endFrame
+      );
       const complete = linearMap(0.5, 0, 1, props.startFrame, props.endFrame);
-      const flameStart = linearMap(index, 0, state.fires.length, props.startFrame, complete);
-      const flameComplete = flameStart + ((props.endFrame - props.startFrame) / 10);
+      const flameStart = linearMap(
+        index,
+        0,
+        state.fires.length,
+        props.startFrame,
+        complete
+      );
+      const flameComplete =
+        flameStart + (props.endFrame - props.startFrame) / 10;
 
       const minMagnitude = 1.3;
       const maxMagnitude = 10;
@@ -90,16 +100,46 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
       if (state.frame >= props.startFrame && state.frame <= props.endFrame) {
         if (state.frame >= flare) {
           // Fade out
-          const ratio = Math.pow(boundedMap(state.frame, beginningOfEnd, props.endFrame, 0, 1), 5);
-          fire.material.uniforms.magnitude.value = linearMap(ratio, 0, 1, minMagnitude, maxMagnitude);
-          fire.material.uniforms.gain.value = boundedMap(ratio, 0, 1, minGain, maxGain);
+          const ratio = Math.pow(
+            boundedMap(state.frame, beginningOfEnd, props.endFrame, 0, 1),
+            5
+          );
+          fire.material.uniforms.magnitude.value = linearMap(
+            ratio,
+            0,
+            1,
+            minMagnitude,
+            maxMagnitude
+          );
+          fire.material.uniforms.gain.value = boundedMap(
+            ratio,
+            0,
+            1,
+            minGain,
+            maxGain
+          );
         } else {
           // Fade in
-          const ratio = Math.pow(boundedMap(state.frame, flameStart, flameComplete, 0, 1), 2);
-          fire.material.uniforms.magnitude.value = boundedMap(ratio, 0, 1, maxMagnitude, midMagnitude);
-          fire.material.uniforms.gain.value = boundedMap(ratio, 0, 1, maxGain, midGain);
+          const ratio = Math.pow(
+            boundedMap(state.frame, flameStart, flameComplete, 0, 1),
+            2
+          );
+          fire.material.uniforms.magnitude.value = boundedMap(
+            ratio,
+            0,
+            1,
+            maxMagnitude,
+            midMagnitude
+          );
+          fire.material.uniforms.gain.value = boundedMap(
+            ratio,
+            0,
+            1,
+            maxGain,
+            midGain
+          );
         }
-      /* eslint-enable immutable/no-mutation */
+        /* eslint-enable immutable/no-mutation */
 
         fire.update(state.frame / 25);
       }
@@ -108,8 +148,7 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
     setState({ ...state, frame: (state.frame + 1) % settings.cycleLength });
   });
 
-  if ((props.startFrame <= state.frame) && (state.frame <= props.endFrame)) {
-
+  if (props.startFrame <= state.frame && state.frame <= props.endFrame) {
     const scale = 0.4;
 
     return (
@@ -129,4 +168,3 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
     return <></>;
   }
 };
-

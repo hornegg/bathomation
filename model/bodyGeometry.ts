@@ -7,7 +7,7 @@ import { createEllipsoid } from './commonGeometry';
 const ThreeBSP = bspConstructor(THREE);
 
 const outfilename = process.argv[2];
-const outline = (process.argv[3] === 'true');
+const outline = process.argv[3] === 'true';
 
 const scalar = outline ? 0.07 : 0;
 
@@ -26,7 +26,9 @@ const head = new THREE.Geometry();
 head.fromBufferGeometry(
   loader.parse(
     JSON.parse(
-      fs.readFileSync(`${__dirname}/../dist/outlineHeadGeometry.json`, {encoding: 'utf8'})
+      fs.readFileSync(`${__dirname}/../dist/outlineHeadGeometry.json`, {
+        encoding: 'utf8',
+      })
     )
   )
 );
@@ -34,16 +36,15 @@ head.fromBufferGeometry(
 const headBsp = new ThreeBSP(head);
 
 const body: THREE.Geometry = bodyEllipsoidBsp
-.subtract(headBoxBsp)
-.subtract(headBsp)
-.toGeometry();
+  .subtract(headBoxBsp)
+  .subtract(headBsp)
+  .toGeometry();
 
 fs.writeFileSync(
   outfilename,
   JSON.stringify(
-    (new THREE.BufferGeometry()).fromGeometry(body).toJSON(),
+    new THREE.BufferGeometry().fromGeometry(body).toJSON(),
     null,
     2
   )
 );
-

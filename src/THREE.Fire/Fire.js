@@ -9,48 +9,45 @@
 import * as THREE from 'three';
 import './FireShader';
 
-THREE.Fire = function ( fireTex, color ) {
+THREE.Fire = function (fireTex, color) {
+  var fireMaterial = new THREE.ShaderMaterial({
+    defines: THREE.FireShader.defines,
+    uniforms: THREE.UniformsUtils.clone(THREE.FireShader.uniforms),
+    vertexShader: THREE.FireShader.vertexShader,
+    fragmentShader: THREE.FireShader.fragmentShader,
+    transparent: true,
+    depthWrite: false,
+    depthTest: false,
+  });
 
-	var fireMaterial = new THREE.ShaderMaterial( {
-        defines         : THREE.FireShader.defines,
-        uniforms        : THREE.UniformsUtils.clone( THREE.FireShader.uniforms ),
-        vertexShader    : THREE.FireShader.vertexShader,
-        fragmentShader  : THREE.FireShader.fragmentShader,
-		transparent     : true,
-		depthWrite      : false,
-        depthTest       : false
-	} );
+  // initialize uniforms
 
-    // initialize uniforms 
+  fireTex.magFilter = fireTex.minFilter = THREE.LinearFilter;
+  fireTex.wrapS = fireTex.wrapT = THREE.ClampToEdgeWrapping;
 
-    fireTex.magFilter = fireTex.minFilter = THREE.LinearFilter;
-    fireTex.wrapS = fireTex.wrapT = THREE.ClampToEdgeWrapping;
-    
-    fireMaterial.uniforms.fireTex.value = fireTex;
-    fireMaterial.uniforms.color.value = color || new THREE.Color( 0xeeeeee );
-    fireMaterial.uniforms.invModelMatrix.value = new THREE.Matrix4();
-    fireMaterial.uniforms.scale.value = new THREE.Vector3( 1, 1, 1 );
-    fireMaterial.uniforms.seed.value = Math.random() * 19.19;
+  fireMaterial.uniforms.fireTex.value = fireTex;
+  fireMaterial.uniforms.color.value = color || new THREE.Color(0xeeeeee);
+  fireMaterial.uniforms.invModelMatrix.value = new THREE.Matrix4();
+  fireMaterial.uniforms.scale.value = new THREE.Vector3(1, 1, 1);
+  fireMaterial.uniforms.seed.value = Math.random() * 19.19;
 
-	THREE.Mesh.call( this, new THREE.BoxGeometry( 1.0, 1.0, 1.0 ), fireMaterial );
+  THREE.Mesh.call(this, new THREE.BoxGeometry(1.0, 1.0, 1.0), fireMaterial);
 };
 
-THREE.Fire.prototype = Object.create( THREE.Mesh.prototype );
+THREE.Fire.prototype = Object.create(THREE.Mesh.prototype);
 THREE.Fire.prototype.constructor = THREE.Fire;
 
-THREE.Fire.prototype.update = function ( time ) {
+THREE.Fire.prototype.update = function (time) {
+  var invModelMatrix = this.material.uniforms.invModelMatrix.value;
 
-    var invModelMatrix = this.material.uniforms.invModelMatrix.value;
+  this.updateMatrixWorld();
+  invModelMatrix.copy(this.matrixWorld).invert();
 
-    this.updateMatrixWorld();
-    invModelMatrix.copy(this.matrixWorld).invert();
+  if (time !== undefined) {
+    this.material.uniforms.time.value = time;
+  }
 
-    if( time !== undefined ) {
-        this.material.uniforms.time.value = time;
-    }
+  this.material.uniforms.invModelMatrix.value = invModelMatrix;
 
-    this.material.uniforms.invModelMatrix.value = invModelMatrix;
-
-    this.material.uniforms.scale.value = this.scale;
-
+  this.material.uniforms.scale.value = this.scale;
 };

@@ -14,9 +14,9 @@ import settings from './src/settings';
 
 const execNoLog = promisify(execOrig);
 
-const exec = async(cmd) => {
+const exec = async (cmd) => {
   console.log(`\n${cmd}`);
-  return execNoLog(cmd).then(result => {
+  return execNoLog(cmd).then((result) => {
     console.log(result.stdout + result.stderr);
     return result;
   });
@@ -137,11 +137,18 @@ const postProcessing = async () => {
     await fs.mkdir(framesPath);
     await exec(`extract-zip ${zipFilename} ${rawFramesPath}`);
 
-    await Promise.all(times(batches, batch => {
-      const offset = batch * batchSize;
-      const thisBatchSize = Math.min(batchSize, settings.cycleLength - offset - 1);
-      return lexec(`${tsNodePath} processing/postProcessing.ts ${offset} ${thisBatchSize}`);
-    }));
+    await Promise.all(
+      times(batches, (batch) => {
+        const offset = batch * batchSize;
+        const thisBatchSize = Math.min(
+          batchSize,
+          settings.cycleLength - offset - 1
+        );
+        return lexec(
+          `${tsNodePath} processing/postProcessing.ts ${offset} ${thisBatchSize}`
+        );
+      })
+    );
 
     await exec(
       `${ffmpegPath} -framerate ${settings.fps} -i ${framesParam} ${videoPath}`

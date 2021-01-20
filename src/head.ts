@@ -1,33 +1,37 @@
 import * as THREE from 'three';
 
 import {
-  ellipticalToCartesian, TWO_PI, HALF_PI, PI, createArc, linearMap, headHeight, skin, outlineMaterial, outlineMaterialDouble, redMaterial,
-  loadGeometry
+  ellipticalToCartesian,
+  TWO_PI,
+  HALF_PI,
+  PI,
+  createArc,
+  linearMap,
+  headHeight,
+  skin,
+  outlineMaterial,
+  outlineMaterialDouble,
+  redMaterial,
+  loadGeometry,
 } from './common';
 
-import {createFace} from './face';
+import { createFace } from './face';
 
 export const createHead = async (): Promise<THREE.Group> => {
-
   const head = new THREE.Group();
 
   //
   // Load the geometry
   //
 
-  head.add(
-    new THREE.Mesh(
-      await loadGeometry('headGeometry.json'),
-      skin
-    )
-  );
+  head.add(new THREE.Mesh(await loadGeometry('headGeometry.json'), skin));
 
   head.add(
     new THREE.Mesh(
       await loadGeometry('outlineHeadGeometry.json'),
       outlineMaterial
     )
-  );  
+  );
 
   //
   // Horns
@@ -43,22 +47,23 @@ export const createHead = async (): Promise<THREE.Group> => {
   }
 
   const createHorn = (param: HornParameters): THREE.Geometry => {
-
     const openHorn = (u: number, v: number, vec: THREE.Vector3): void => {
-
       const width = param.maxWidth * (1 - u);
       const depth = param.maxDepth * (1 - u);
       const angle = TWO_PI * v;
 
       ellipticalToCartesian(
-        1 + (param.length * u),
-        param.theta + (width * Math.sin(angle)),
-        param.phi + (depth * Math.cos(angle)),
+        1 + param.length * u,
+        param.theta + width * Math.sin(angle),
+        param.phi + depth * Math.cos(angle),
         vec
       );
 
-      vec = vec.applyAxisAngle(new THREE.Vector3(0, 0, 1), param.bend * param.length * u);
-    }; 
+      vec = vec.applyAxisAngle(
+        new THREE.Vector3(0, 0, 1),
+        param.bend * param.length * u
+      );
+    };
 
     const horn = new THREE.ParametricGeometry(openHorn, 10, 10);
 
@@ -67,11 +72,11 @@ export const createHead = async (): Promise<THREE.Group> => {
 
   const horn = {
     theta: HALF_PI,
-    phi: (5/8) * PI,
+    phi: (5 / 8) * PI,
     maxWidth: 0.15,
     maxDepth: 0.1,
     length: 1,
-    bend: 0.2
+    bend: 0.2,
   };
 
   const om = 1.4; // Outline multiplier
@@ -80,13 +85,10 @@ export const createHead = async (): Promise<THREE.Group> => {
     ...horn,
     maxWidth: horn.maxWidth * om,
     maxDepth: horn.maxDepth * om,
-    length: 1.2
+    length: 1.2,
   };
 
-  const leftHorn = new THREE.Mesh(
-    createHorn(horn),
-    skin
-  );
+  const leftHorn = new THREE.Mesh(createHorn(horn), skin);
 
   const leftHornOutline = new THREE.Mesh(
     createHorn(hornOutline),
@@ -96,8 +98,8 @@ export const createHead = async (): Promise<THREE.Group> => {
   const rightHorn = new THREE.Mesh(
     createHorn({
       ...horn,
-      phi: (3/8) * PI,
-      bend: -horn.bend
+      phi: (3 / 8) * PI,
+      bend: -horn.bend,
     }),
     skin
   );
@@ -105,8 +107,8 @@ export const createHead = async (): Promise<THREE.Group> => {
   const rightHornOutline = new THREE.Mesh(
     createHorn({
       ...hornOutline,
-      phi: (3/8) * PI,
-      bend: -horn.bend
+      phi: (3 / 8) * PI,
+      bend: -horn.bend,
     }),
     outlineMaterial
   );
@@ -118,7 +120,7 @@ export const createHead = async (): Promise<THREE.Group> => {
     phiRadius: horn.maxDepth,
     tubeRadius: 0.07,
     startAngle: 0,
-    finishAngle: TWO_PI
+    finishAngle: TWO_PI,
   };
 
   const hornGroup = new THREE.Group();
@@ -127,21 +129,16 @@ export const createHead = async (): Promise<THREE.Group> => {
   hornGroup.add(rightHorn);
   hornGroup.add(rightHornOutline);
 
-  hornGroup.add(
-    new THREE.Mesh(
-      createArc(hornRing),
-      outlineMaterialDouble
-    ),
-  );
+  hornGroup.add(new THREE.Mesh(createArc(hornRing), outlineMaterialDouble));
 
   hornGroup.add(
     new THREE.Mesh(
       createArc({
         ...hornRing,
-        centerPhi: (3/8) * PI,
+        centerPhi: (3 / 8) * PI,
       }),
       outlineMaterialDouble
-    ),
+    )
   );
 
   head.add(hornGroup);
@@ -150,8 +147,12 @@ export const createHead = async (): Promise<THREE.Group> => {
   // Antenna
   //
 
-  const createAntenna = (beginning: THREE.Vector3, middle: THREE.Vector3, end: THREE.Vector3, width: number): THREE.TubeGeometry => {
-
+  const createAntenna = (
+    beginning: THREE.Vector3,
+    middle: THREE.Vector3,
+    end: THREE.Vector3,
+    width: number
+  ): THREE.TubeGeometry => {
     class Tube extends THREE.Curve<THREE.Vector3> {
       getPoint(t): THREE.Vector3 {
         if (t < 0.5) {
@@ -170,8 +171,7 @@ export const createHead = async (): Promise<THREE.Group> => {
       }
     }
 
-    return new THREE.TubeGeometry(new Tube, 20, width);
-
+    return new THREE.TubeGeometry(new Tube(), 20, width);
   };
 
   const antenna = new THREE.Group();
@@ -188,28 +188,17 @@ export const createHead = async (): Promise<THREE.Group> => {
   const antennaDot = new THREE.SphereGeometry(antennaSize, 12, 12);
   const antennaOutline = new THREE.SphereGeometry(antennaSize * om, 12, 12);
   antennaDot.translate(antennaPosition.x, antennaPosition.y, antennaPosition.z);
-  antennaOutline.translate(antennaPosition.x, antennaPosition.y, antennaPosition.z);
-
-  antenna.add(
-    new THREE.Mesh(
-      antennaPole,
-      outlineMaterialDouble
-    )
+  antennaOutline.translate(
+    antennaPosition.x,
+    antennaPosition.y,
+    antennaPosition.z
   );
 
-  antenna.add(
-    new THREE.Mesh(
-      antennaDot,
-      redMaterial
-    )
-  );
+  antenna.add(new THREE.Mesh(antennaPole, outlineMaterialDouble));
 
-  antenna.add(
-    new THREE.Mesh(
-      antennaOutline,
-      outlineMaterial
-    )
-  );
+  antenna.add(new THREE.Mesh(antennaDot, redMaterial));
+
+  antenna.add(new THREE.Mesh(antennaOutline, outlineMaterial));
 
   head.add(antenna);
 
@@ -221,4 +210,3 @@ export const createHead = async (): Promise<THREE.Group> => {
 
   return head;
 };
-

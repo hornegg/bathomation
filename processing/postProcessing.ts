@@ -38,7 +38,7 @@ const hueAdjustments = {
   blue: 212,
   green: 60,
   yellow: 12,
-  red: -16
+  red: -16,
 };
 
 const inputDir = path.resolve(path.join(__dirname, '..', 'dist', 'rawFrames'));
@@ -81,45 +81,51 @@ new p5((p: p5) => {
 
   // eslint-disable-next-line immutable/no-mutation
   p.setup = async () => {
-    const framePromises = times(frameCount, (index) => limit(() => {
+    const framePromises = times(frameCount, (index) =>
+      limit(() => {
+        const frame = offset + index;
 
-      const frame = offset + index;
+        const watchTowerLength = settings.cycleLength / 4;
+        const cycleFrame = frame % settings.cycleLength;
+        const watchTowerIndex = Math.floor(cycleFrame / watchTowerLength);
+        const watchTowerColor = settings.watchTowers.color[watchTowerIndex];
 
-      const watchTowerLength = settings.cycleLength / 4;
-      const cycleFrame = frame % settings.cycleLength;
-      const watchTowerIndex = Math.floor(cycleFrame / watchTowerLength);
-      const watchTowerColor = settings.watchTowers.color[watchTowerIndex];
+        return Promise.all([
+          readPng(getInputFrameFilename(frame)),
+          readPng(getInputFrameFilename(frame + settings.cycleLength)),
+          readPng(
+            getInputFrameFilename(
+              frame + settings.cycleLength + settings.cycleLength
+            )
+          ),
+        ]).then(([topFlames, baphomet, bottomFlames]) => {
+          const hueAdjustment = hueAdjustments[watchTowerColor]
+            ? hueAdjustments[watchTowerColor]
+            : 0;
+          changeHues(topFlames, hueAdjustment);
+          changeHues(bottomFlames, hueAdjustment);
 
-      return Promise.all([
-        readPng(getInputFrameFilename(frame)),
-        readPng(getInputFrameFilename(frame + settings.cycleLength)),
-        readPng(
-          getInputFrameFilename(
-            frame + settings.cycleLength + settings.cycleLength
-          )
-        ),
-      ]).then(([topFlames, baphomet, bottomFlames]) => {
-
-        const hueAdjustment = hueAdjustments[watchTowerColor] ? hueAdjustments[watchTowerColor] : 0;
-        changeHues(topFlames, hueAdjustment);
-        changeHues(bottomFlames, hueAdjustment);
-
-        const g = p.createGraphics(settings.width, settings.height);
-        g.background(255);
-        g.image(bottomFlames, 0, 0);
-        g.image(baphomet, 0, 0);
-        g.image(topFlames, 0, 0);
-        return writePng(g, getOutputFrameFilename(frame));
-      });
-    }));
+          const g = p.createGraphics(settings.width, settings.height);
+          g.background(255);
+          g.image(bottomFlames, 0, 0);
+          g.image(baphomet, 0, 0);
+          g.image(topFlames, 0, 0);
+          return writePng(g, getOutputFrameFilename(frame));
+        });
+      })
+    );
 
     await Promise.all(framePromises);
 
     const end = performance.now();
 
-    console.log(`Post-processed frames ${offset} to ${offset + frameCount - 1} in ${((end - start) / 1000).toFixed(1)} seconds`);
+    console.log(
+      `Post-processed frames ${offset} to ${offset + frameCount - 1} in ${(
+        (end - start) /
+        1000
+      ).toFixed(1)} seconds`
+    );
 
     process.exit(0);
-
   };
 });

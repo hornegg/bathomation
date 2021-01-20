@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { SettingsInterface, WatchTowers} from './SettingsInterface';
+import { SettingsInterface, WatchTowers } from './SettingsInterface';
 
 const watchTowersBlank: WatchTowers = {
   name: ['', '', '', ''],
@@ -18,7 +18,7 @@ const watchTowersAngels: WatchTowers = {
 
 const watchTowersQuillhoth: WatchTowers = {
   name: ['Leviathan', 'Belial', 'Lucifer', 'Satan'],
-  color: ['blue', 'green', 'yellow', 'red', ],
+  color: ['blue', 'green', 'yellow', 'red'],
 };
 
 const settings: SettingsInterface = {
@@ -32,4 +32,3 @@ const settings: SettingsInterface = {
 };
 
 export default settings;
-

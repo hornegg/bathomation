@@ -17,28 +17,26 @@ const p5 = require('p5');
 
 const readPng = (filename) => {
   return new Promise((resolve) => {
-   
-  fs.createReadStream(filename)
-    .pipe(new PNG())
-    .on('parsed', function () {
-      const img = new p5.Image();
-      img.resize(this.width, this.height);
-      img.loadPixels();
-    
-      Array.from(this.data).forEach((value, index) => {
-        if (index < img.pixels.length) {
-          img.pixels[index] = value;
-        }
+    fs.createReadStream(filename)
+      .pipe(new PNG())
+      .on('parsed', function () {
+        const img = new p5.Image();
+        img.resize(this.width, this.height);
+        img.loadPixels();
+
+        Array.from(this.data).forEach((value, index) => {
+          if (index < img.pixels.length) {
+            img.pixels[index] = value;
+          }
+        });
+
+        img.updatePixels();
+        resolve(img);
       });
-    
-      img.updatePixels();
-      resolve(img);
-    });
   });
 };
 
 const readPngSync = (filename) => {
-
   const buffer = fs.readFileSync(filename);
   const png = PNG.sync.read(buffer);
 
@@ -59,9 +57,8 @@ const readPngSync = (filename) => {
 
 const writePng = (g, filename) => {
   return new Promise((resolve) => {
-
     g.loadPixels();
-    const png = new PNG({width: g.width, height: g.height});
+    const png = new PNG({ width: g.width, height: g.height });
     png.data = Buffer.from(g.pixels);
 
     const writeStream = fs.createWriteStream(filename);
@@ -71,9 +68,8 @@ const writePng = (g, filename) => {
 };
 
 const writePngSync = (g, filename) => {
-
   g.loadPixels();
-  const png = new PNG({width: g.width, height: g.height});
+  const png = new PNG({ width: g.width, height: g.height });
   png.data = Buffer.from(g.pixels);
 
   const buffer = PNG.sync.write(png);
@@ -86,6 +82,5 @@ module.exports = {
   readPng,
   readPngSync,
   writePng,
-  writePngSync
+  writePngSync,
 };
-

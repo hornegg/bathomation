@@ -1,23 +1,19 @@
 {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-      "eslint:recommended"
-    ],
-    "ignorePatterns": [
-      "node_modules/",
-      "dist/"
-    ],
-    "rules": {
-      "eqeqeq": ["error"],
-      "no-shadow": ["error"],
-      "max-len": ["error", {"code": 140}],
-      "quotes": ["error", "single"],
-      "no-tabs": ["error"]
-    },
-    "overrides": [{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "extends": ["eslint:recommended"],
+  "ignorePatterns": ["node_modules/", "dist/"],
+  "rules": {
+    "eqeqeq": ["error"],
+    "no-shadow": ["error"],
+    "max-len": ["error", { "code": 140 }],
+    "quotes": ["error", "single"],
+    "no-tabs": ["error"]
+  },
+  "overrides": [
+    {
       "files": ["*.ts*"],
-      "plugins": ["@typescript-eslint", "immutable"],
+      "plugins": ["@typescript-eslint", "immutable", "no-mixed-operators"],
       "extends": [
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
@@ -29,9 +25,9 @@
         "@typescript-eslint/interface-name-prefix": ["off"],
         "immutable/no-let": ["error"],
         "immutable/no-this": ["error"],
-        "immutable/no-mutation": ["error"]
+        "immutable/no-mutation": ["error"],
+        "no-mixed-operators/no-mixed-operators": ["error"]
       }
-    }]
-  }
-
-  
+    }
+  ]
+}

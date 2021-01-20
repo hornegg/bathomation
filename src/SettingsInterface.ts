@@ -1,4 +1,3 @@
-
 export interface WatchTowers {
   name: [string, string, string, string];
   color: [string, string, string, string];
@@ -11,6 +10,5 @@ export interface SettingsInterface {
   fps: number; // Frames per second
   frameCapture: boolean;
   invertPentagrams: boolean;
-  watchTowers: WatchTowers
+  watchTowers: WatchTowers;
 }
-

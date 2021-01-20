@@ -199,7 +199,11 @@ Promise.all([
       );
     };
 
-    const size = { width: settings.width, height: settings.height, border: 'solid 1px black' };
+    const size = {
+      width: settings.width,
+      height: settings.height,
+      border: 'solid 1px black',
+    };
 
     ReactDOM.render(
       <div style={size}>
