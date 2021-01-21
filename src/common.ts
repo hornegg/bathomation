@@ -6,6 +6,14 @@ export const TWO_PI = 2 * PI;
 export const HALF_PI = 0.5 * PI;
 export const QUARTER_PI = 0.25 * PI;
 
+export type IMap = (
+  value: number,
+  range1start: number,
+  range1end: number,
+  range2start: number,
+  range2end: number
+) => number;
+
 export const linearMap = (
   value: number,
   range1start: number,
@@ -18,6 +26,23 @@ export const linearMap = (
     ((range2end - range2start) *
       ((value - range1start) / (range1end - range1start)))
   );
+};
+
+export const powerMap = (power: number): IMap => {
+  return (
+    value: number,
+    range1start: number,
+    range1end: number,
+    range2start: number,
+    range2end: number
+  ): number =>
+    linearMap(
+      Math.pow(value, power),
+      range1start,
+      range1end,
+      range2start,
+      range2end
+    );
 };
 
 export const boundedMap = (
@@ -37,11 +62,22 @@ export const boundedMap = (
   }
 };
 
-export const segmentedMap = <T extends Array<number>>(
+export const segmentedMap = (
   value: number,
-  range1: T,
-  range2: T
+  range1: number[],
+  range2: number[],
+  maps: IMap[]
 ): number => {
+  if (range1.length !== range2.length) {
+    throw new Error('segmentedMap range arrays not equal');
+  }
+
+  if (maps.length !== range1.length + 1) {
+    throw new Error(
+      'segmentedMap maps array length must be one less that ranges length'
+    );
+  }
+
   const n = range1.find((t) => t > value);
   switch (n) {
     case 0:
@@ -49,7 +85,7 @@ export const segmentedMap = <T extends Array<number>>(
     case undefined:
       return range2[range2.length - 1];
     default:
-      return linearMap(
+      return maps[n - 1](
         value,
         range1[n - 1],
         range1[n],
