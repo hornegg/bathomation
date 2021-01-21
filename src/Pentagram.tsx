@@ -4,7 +4,7 @@ import { useFrame } from 'react-three-fiber';
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
 
-import { boundedMap, HALF_PI, linearMap, PI } from './common';
+import { HALF_PI, linearMap, PI, powerMap, segmentedMap } from './common';
 import settings from './settings';
 
 const getPointOnPentagon = (pt: number) => {
@@ -100,10 +100,13 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
       if (state.frame >= props.startFrame && state.frame <= props.endFrame) {
         if (state.frame >= flare) {
           // Fade out
-          const ratio = Math.pow(
-            boundedMap(state.frame, beginningOfEnd, props.endFrame, 0, 1),
-            5
+          const ratio = segmentedMap(
+            state.frame,
+            [beginningOfEnd, props.endFrame],
+            [0, 1],
+            [powerMap(5)]
           );
+
           fire.material.uniforms.magnitude.value = linearMap(
             ratio,
             0,
@@ -111,7 +114,8 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
             minMagnitude,
             maxMagnitude
           );
-          fire.material.uniforms.gain.value = boundedMap(
+
+          fire.material.uniforms.gain.value = linearMap(
             ratio,
             0,
             1,
@@ -120,18 +124,22 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
           );
         } else {
           // Fade in
-          const ratio = Math.pow(
-            boundedMap(state.frame, flameStart, flameComplete, 0, 1),
-            2
+          const ratio = segmentedMap(
+            state.frame,
+            [flameStart, flameComplete],
+            [0, 1],
+            [powerMap(2)]
           );
-          fire.material.uniforms.magnitude.value = boundedMap(
+
+          fire.material.uniforms.magnitude.value = linearMap(
             ratio,
             0,
             1,
             maxMagnitude,
             midMagnitude
           );
-          fire.material.uniforms.gain.value = boundedMap(
+
+          fire.material.uniforms.gain.value = linearMap(
             ratio,
             0,
             1,

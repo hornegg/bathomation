@@ -45,44 +45,29 @@ export const powerMap = (power: number): IMap => {
     );
 };
 
-export const boundedMap = (
-  value: number,
-  range1start: number,
-  range1end: number,
-  range2start: number,
-  range2end: number
-): number => {
-  const value2 = linearMap(value, range1start, range1end, 0, 1);
-  if (value2 < 0) {
-    return range2start;
-  } else if (value2 < 1) {
-    return linearMap(value, range1start, range1end, range2start, range2end);
-  } else {
-    return range2end;
-  }
-};
-
 export const segmentedMap = (
   value: number,
   range1: number[],
   range2: number[],
-  maps: IMap[]
+  maps?: IMap[]
 ): number => {
   if (range1.length !== range2.length) {
     throw new Error('segmentedMap range arrays not equal');
   }
 
-  if (maps.length !== range1.length + 1) {
+  maps = maps ? maps : Array(range1.length - 1).fill(linearMap);
+
+  if (maps.length !== range1.length - 1) {
     throw new Error(
       'segmentedMap maps array length must be one less that ranges length'
     );
   }
 
-  const n = range1.find((t) => t > value);
+  const n = range1.findIndex((t) => t > value);
   switch (n) {
     case 0:
       return range2[0];
-    case undefined:
+    case -1:
       return range2[range2.length - 1];
     default:
       return maps[n - 1](

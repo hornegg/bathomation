@@ -4,13 +4,13 @@ import { Canvas, CanvasContext, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 
 import {
-  boundedMap,
   HALF_PI,
   linearMap,
   loadGeometry,
   outlineMaterial,
   PI,
   QUARTER_PI,
+  segmentedMap,
   skin,
 } from './common';
 
@@ -69,26 +69,22 @@ Promise.all([
       const watchTower = 3 - Math.floor(cycleFrame / watchTowerLength);
       const watchTowerFrame = cycleFrame % watchTowerLength;
 
-      const bodyAngle = boundedMap(
+      const bodyAngle = segmentedMap(
         watchTowerFrame,
-        pentagramLength,
-        watchTowerLength,
-        watchTower * HALF_PI,
-        (watchTower - 1) * HALF_PI
+        [pentagramLength, watchTowerLength],
+        [watchTower * HALF_PI, (watchTower - 1) * HALF_PI]
       );
-      const leftFootAngle = boundedMap(
+
+      const leftFootAngle = segmentedMap(
         watchTowerFrame,
-        pentagramLength,
-        midStepLength,
-        watchTower * HALF_PI,
-        (watchTower - 1) * HALF_PI
+        [pentagramLength, midStepLength],
+        [watchTower * HALF_PI, (watchTower - 1) * HALF_PI]
       );
-      const rightFootAngle = boundedMap(
+
+      const rightFootAngle = segmentedMap(
         watchTowerFrame,
-        midStepLength,
-        watchTowerLength,
-        watchTower * HALF_PI,
-        (watchTower - 1) * HALF_PI
+        [midStepLength, watchTowerLength],
+        [watchTower * HALF_PI, (watchTower - 1) * HALF_PI]
       );
 
       const layer = Math.floor(frame / settings.cycleLength) % 3;
