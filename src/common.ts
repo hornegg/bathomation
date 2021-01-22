@@ -35,14 +35,11 @@ export const powerMap = (power: number): IMap => {
     range1end: number,
     range2start: number,
     range2end: number
-  ): number =>
-    linearMap(
-      Math.pow(value, power),
-      range1start,
-      range1end,
-      range2start,
-      range2end
-    );
+  ): number => {
+    const linearRatio = (value - range1start) / (range1end - range1start);
+    const ratio = Math.pow(linearRatio, power);
+    return range2start + ((range2end - range2start) * ratio);
+  };
 };
 
 export const segmentedMap = (
