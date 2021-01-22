@@ -68,15 +68,9 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
 
   useFrame(() => {
     state.fires.forEach((fire, index) => {
-      const flare = linearMap(0.8, 0, 1, props.startFrame, props.endFrame);
-      const beginningOfEnd = linearMap(
-        0.9,
-        0,
-        1,
-        props.startFrame,
-        props.endFrame
-      );
+
       const complete = linearMap(0.5, 0, 1, props.startFrame, props.endFrame);
+
       const flameStart = linearMap(
         index,
         0,
@@ -84,8 +78,19 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
         props.startFrame,
         complete
       );
+
       const flameComplete =
         flameStart + ((props.endFrame - props.startFrame) / 10);
+
+      const flare = linearMap(0.8, 0, 1, props.startFrame, props.endFrame);
+
+      const beginningOfEnd = linearMap(
+        0.9,
+        0,
+        1,
+        props.startFrame,
+        props.endFrame
+      );
 
       const minMagnitude = 1.3;
       const maxMagnitude = 10;
@@ -96,59 +101,34 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
       const midMagnitude = linearMap(mid, 0, 1, minMagnitude, maxMagnitude);
       const midGain = linearMap(mid, 0, 1, minGain, maxGain);
 
+      const frameSegments = [
+        flameStart,
+        flameComplete,
+        flare,
+        beginningOfEnd,
+        props.endFrame,
+      ];
+      const maps = [powerMap(2), linearMap, linearMap, powerMap(5)];
+
       /* eslint-disable immutable/no-mutation */
+
+      fire.material.uniforms.magnitude.value = segmentedMap(
+        state.frame,
+        frameSegments,
+        [maxMagnitude, midMagnitude, midMagnitude, minMagnitude, maxMagnitude],
+        maps
+      );
+
+      fire.material.uniforms.gain.value = segmentedMap(
+        state.frame,
+        frameSegments,
+        [maxGain, midGain, midGain, minGain, maxGain],
+        maps
+      );
+
+      /* eslint-enable immutable/no-mutation */
+
       if (state.frame >= props.startFrame && state.frame <= props.endFrame) {
-        if (state.frame >= flare) {
-          // Fade out
-          const ratio = segmentedMap(
-            state.frame,
-            [beginningOfEnd, props.endFrame],
-            [0, 1],
-            [powerMap(5)]
-          );
-
-          fire.material.uniforms.magnitude.value = linearMap(
-            ratio,
-            0,
-            1,
-            minMagnitude,
-            maxMagnitude
-          );
-
-          fire.material.uniforms.gain.value = linearMap(
-            ratio,
-            0,
-            1,
-            minGain,
-            maxGain
-          );
-        } else {
-          // Fade in
-          const ratio = segmentedMap(
-            state.frame,
-            [flameStart, flameComplete],
-            [0, 1],
-            [powerMap(2)]
-          );
-
-          fire.material.uniforms.magnitude.value = linearMap(
-            ratio,
-            0,
-            1,
-            maxMagnitude,
-            midMagnitude
-          );
-
-          fire.material.uniforms.gain.value = linearMap(
-            ratio,
-            0,
-            1,
-            maxGain,
-            midGain
-          );
-        }
-        /* eslint-enable immutable/no-mutation */
-
         fire.update(state.frame / 25);
       }
     });
