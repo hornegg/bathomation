@@ -8,8 +8,6 @@ import {
   linearMap,
   loadGeometry,
   outlineMaterial,
-  PI,
-  QUARTER_PI,
   segmentedMap,
   skin,
 } from './common';
@@ -20,6 +18,7 @@ import FrameLimiter from './components/FrameLimiter';
 import FrameRate from './components/FrameRate';
 import settings from './settings';
 import FrameCapture from './components/FrameCapture';
+import getCameraPosition from './getCameraPosition';
 
 const watchTowerLength = settings.cycleLength / 4;
 const pentagramLength = (2 * watchTowerLength) / 3;
@@ -110,15 +109,10 @@ Promise.all([
       const [state, setState] = React.useState(choreograph(0));
 
       useFrame((canvasContext: CanvasContext) => {
-        // First time in, reposition the camera, because I can't get the perspectiveCamera component to play ball
-        if (state.frame === 0) {
-          canvasContext.camera.position.setFromSphericalCoords(
-            5,
-            HALF_PI,
-            PI + QUARTER_PI
-          );
-          canvasContext.camera.lookAt(0, -0.6, 0);
-        }
+        canvasContext.camera.position.set(
+          ...getCameraPosition(state.frame).toArray()
+        );
+        canvasContext.camera.lookAt(0, -0.6, 0);
 
         // Now update the body position based on what frame number this is
         setState(choreograph(state.frame + 1));
