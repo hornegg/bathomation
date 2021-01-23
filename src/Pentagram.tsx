@@ -69,22 +69,22 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
   useFrame(() => {
     state.fires.forEach((fire, index) => {
 
-      const allFlamesComplete = linearMap(0.5, 0, 1, props.startFrame, props.endFrame);
+      const allFlamesCompleteFrame = linearMap(0.5, 0, 1, props.startFrame, props.endFrame);
 
-      const flameStart = linearMap(
+      const flameStartFrame = linearMap(
         index,
         0,
         state.fires.length,
         props.startFrame,
-        allFlamesComplete
+        allFlamesCompleteFrame
       );
 
-      const flameComplete =
-        flameStart + ((props.endFrame - props.startFrame) / 10);
+      const flameCompleteFrame =
+        flameStartFrame + ((props.endFrame - props.startFrame) / 10);
 
-      const flare = linearMap(0.8, 0, 1, props.startFrame, props.endFrame);
+      const flareStartFrame = linearMap(0.8, 0, 1, props.startFrame, props.endFrame);
 
-      const beginningOfEnd = linearMap(
+      const flareEndFrame = linearMap(
         0.9,
         0,
         1,
@@ -92,22 +92,22 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
         props.endFrame
       );
 
-      const maxMagnitude = 1.3;
-      const minMagnitude = 10;
-      const maxGain = 0.5;
-      const minGain = 5;
+      const flareMagnitude = 1;
+      const flameOnMagnitude = 1.3;
+      const flameOffMagnitude = 10;
 
-      const mid = 0.06;
-      const midMagnitude = linearMap(mid, 0, 1, maxMagnitude, minMagnitude);
-      const midGain = linearMap(mid, 0, 1, maxGain, minGain);
+      const flareGain = 0.2;
+      const flameOnGain = 0.5;
+      const flameOffGain = 5;
 
       const frameSegments = [
-        flameStart,
-        flameComplete,
-        flare,
-        beginningOfEnd,
+        flameStartFrame,
+        flameCompleteFrame,
+        flareStartFrame,
+        flareEndFrame,
         props.endFrame,
       ];
+
       const maps = [powerMap(2), linearMap, linearMap, powerMap(5)];
 
       /* eslint-disable immutable/no-mutation */
@@ -115,14 +115,14 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
       fire.material.uniforms.magnitude.value = segmentedMap(
         state.frame,
         frameSegments,
-        [minMagnitude, midMagnitude, midMagnitude, maxMagnitude, minMagnitude],
+        [flameOffMagnitude, flameOnMagnitude, flameOnMagnitude, flareMagnitude, flameOffMagnitude],
         maps
       );
 
       fire.material.uniforms.gain.value = segmentedMap(
         state.frame,
         frameSegments,
-        [minGain, midGain, midGain, maxGain, minGain],
+        [flameOffGain, flameOnGain, flameOnGain, flareGain, flameOffGain],
         maps
       );
 
