@@ -186,7 +186,7 @@ Promise.all([
         <group>
           {state.layerInfo.baphomet ? baphomet : <></>}
           {Pentagrams}
-          <Room />
+          {state.layerInfo.baphomet ? <Room /> : <></>}
         </group>
       );
     };
