@@ -109,10 +109,10 @@ Promise.all([
       const [state, setState] = React.useState(choreograph(0));
 
       useFrame((canvasContext: CanvasContext) => {
-        canvasContext.camera.position.set(
-          ...getCameraPosition(state.frame).toArray()
-        );
-        canvasContext.camera.lookAt(0, -0.6, 0);
+        const [x, y, z] = getCameraPosition(state.frame).toArray();
+        const yAdjust = 0.4;
+        canvasContext.camera.position.set(x, y + yAdjust, z);
+        canvasContext.camera.lookAt(0, -0.6 + yAdjust, 0);
 
         // Now update the body position based on what frame number this is
         setState(choreograph(state.frame + 1));
@@ -189,14 +189,14 @@ Promise.all([
       );
     };
 
-    const size = {
-      width: settings.width,
-      height: settings.height,
-      border: 'solid 1px black',
-    };
-
     ReactDOM.render(
-      <div style={size}>
+      <div
+        style={{
+          width: settings.width,
+          height: settings.height,
+          border: 'solid 1px black',
+        }}
+      >
         <Canvas>
           <FrameLimiter fps={settings.fps} />
           <FrameRate logger={console.log} />
