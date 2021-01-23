@@ -82,6 +82,8 @@ export const headWidth = 1.5;
 export const headHeight = 1;
 export const headDepth = 1;
 
+export const floorLevel = -3.1;
+
 export const ellipticalToCartesian = (
   r: number,
   theta: number,
@@ -102,17 +104,20 @@ export const ellipticalToCartesian = (
 //
 
 export const skin = new THREE.MeshBasicMaterial({
-  color: 0x333333,
+  color: 0x111111,
   side: THREE.DoubleSide,
 });
+
 export const outlineMaterial = new THREE.MeshBasicMaterial({
   color: 'black',
   side: THREE.BackSide,
 });
+
 export const outlineMaterialDouble = new THREE.MeshBasicMaterial({
   color: 'black',
   side: THREE.DoubleSide,
 });
+
 export const redMaterial = new THREE.MeshBasicMaterial({
   color: 'red',
   side: THREE.DoubleSide,

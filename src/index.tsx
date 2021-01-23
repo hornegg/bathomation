@@ -4,6 +4,7 @@ import { Canvas, CanvasContext, useFrame } from 'react-three-fiber';
 import * as THREE from 'three';
 
 import {
+  floorLevel,
   HALF_PI,
   linearMap,
   loadGeometry,
@@ -181,10 +182,23 @@ Promise.all([
         </group>
       );
 
+      const floorMaterial = new THREE.MeshBasicMaterial({
+        color: 0x999999,
+        side: THREE.DoubleSide,
+      });
+      
+      const floorThickness = 0.1;
+      const floorGeometry = new THREE.BoxGeometry(5, floorThickness, 5);
+      const floorOutlineGeometry = new THREE.BoxGeometry(5.15, floorThickness, 5.15);
+      floorGeometry.translate(0, floorLevel - floorThickness - floorThickness, 0);
+      floorOutlineGeometry.translate(0, floorLevel - floorThickness - floorThickness, 0);
+
       return (
         <group>
           {state.layerInfo.baphomet ? baphomet : <></>}
           {Pentagrams}
+          <mesh geometry={floorGeometry} material={floorMaterial}></mesh>
+          <mesh geometry={floorOutlineGeometry} material={outlineMaterial}></mesh>
         </group>
       );
     };

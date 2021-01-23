@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import * as bspConstructor from 'three-js-csg';
 
 import { createEllipsoid } from './commonGeometry';
+import { floorLevel } from '../src/common';
 
 const ThreeBSP = bspConstructor(THREE);
 
@@ -13,7 +14,6 @@ const left = process.argv[4] === 'true';
 const scalar = outline ? 0.07 : 0;
 
 const radius = 0.5;
-const floorLevel = -3.1;
 
 const footRatio = 1.75;
 const footEllipsoid = createEllipsoid(
