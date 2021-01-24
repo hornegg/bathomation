@@ -37,8 +37,8 @@ const start = performance.now();
 const hueAdjustments = {
   blue: 212,
   green: 60,
-  yellow: 12,
-  red: -16,
+  yellow: 20,
+  red: 228,
 };
 
 const inputDir = path.resolve(path.join(__dirname, '..', 'dist', 'rawFrames'));
