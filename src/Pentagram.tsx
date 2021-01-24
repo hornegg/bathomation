@@ -105,7 +105,7 @@ export const Pentagram = (props: PentagramProps): JSX.Element => {
 
       const flareMagnitude = 1;
       const flameOnMagnitude = 1.3;
-      const flameOffMagnitude = 10;
+      const flameOffMagnitude = 30;
 
       const flareGain = 0.2;
       const flameOnGain = 0.5;
