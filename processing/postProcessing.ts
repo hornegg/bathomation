@@ -71,8 +71,8 @@ new p5((p: p5) => {
 
         const newHue = oldHue + adjustment;
         p.colorMode(p.HSB);
-        const newColor = p.color(newHue, s, b, a);
-        img.set(x, y, newColor);
+        const newColor = p.color(newHue, s, b);
+        img.set(x, y, [p.red(newColor), p.green(newColor), p.blue(newColor), a]);
       });
     });
 
