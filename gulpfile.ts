@@ -151,7 +151,7 @@ const postProcessing = async () => {
     );
 
     await exec(
-      `${ffmpegPath} -framerate ${settings.fps} -i ${framesParam} ${videoPath}`
+      `${ffmpegPath} -framerate ${settings.fps} -i ${framesParam} ${videoPath} -y`
     );
   };
 
