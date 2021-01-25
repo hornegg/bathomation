@@ -38,7 +38,7 @@ const hueAdjustments = {
   blue: 212,
   green: 60,
   yellow: 20,
-  red: 228,
+  red: -30,
 };
 
 const inputDir = path.resolve(path.join(__dirname, '..', 'dist', 'rawFrames'));
@@ -72,7 +72,12 @@ new p5((p: p5) => {
         const newHue = oldHue + adjustment;
         p.colorMode(p.HSB);
         const newColor = p.color(newHue, s, b);
-        img.set(x, y, [p.red(newColor), p.green(newColor), p.blue(newColor), a]);
+        img.set(x, y, [
+          p.red(newColor),
+          p.green(newColor),
+          p.blue(newColor),
+          a,
+        ]);
       });
     });
 

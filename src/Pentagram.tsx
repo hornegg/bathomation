@@ -59,7 +59,7 @@ interface PentagramProps {
 }
 
 export const Pentagram = (props: PentagramProps): JSX.Element => {
-  const flameCount = settings.frameCapture ? 196 : 31;
+  const flameCount = settings.frameCapture ? 99 : 31;
 
   const [state, setState] = React.useState<PentagramState>({
     frame: 0,
