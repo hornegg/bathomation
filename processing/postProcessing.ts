@@ -6,6 +6,7 @@ import * as pLimit from 'p-limit';
 
 import { p5, readPng, writePng } from './p5Headless';
 import settings from '../src/settings';
+import { linearMap, segmentedMap } from '../src/common';
 
 const usage = 'usage: ts-node postProcessing.ts [offset] [frameCount]';
 
@@ -123,10 +124,28 @@ new p5((p: p5) => {
           g.image(baphomet, 0, 0);
           g.image(topFlames, 0, 0);
 
+          const flareStartFrame = linearMap(0.8, 0, 1, 0, watchTowerLength);
+
+          const flareEndFrame = linearMap(0.9, 0, 1, 0, watchTowerLength);
+
+          const frameSegments = [
+            0,
+            flareStartFrame,
+            flareEndFrame,
+            watchTowerLength,
+          ];
+
+          const textSize = segmentedMap(cycleFrame, frameSegments, [
+            0,
+            120,
+            120,
+            0,
+          ]);
+
           const color: [number, number, number] = colors[watchTowerColor];
           g.fill(...color);
           g.textFont('Impact');
-          g.textSize(120);
+          g.textSize(textSize);
 
           const text = settings.watchTowers.name[watchTowerIndex];
 
