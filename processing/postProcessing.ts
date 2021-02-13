@@ -41,6 +41,13 @@ const hueAdjustments = {
   red: -30,
 };
 
+const colors = {
+  blue: [0, 0, 255],
+  green: [0, 255, 0],
+  yellow: [255, 0, 255],
+  red: [255, 0, 0],
+};
+
 const inputDir = path.resolve(path.join(__dirname, '..', 'dist', 'rawFrames'));
 const outputDir = path.resolve(path.join(__dirname, '..', 'dist', 'frames'));
 
@@ -115,6 +122,14 @@ new p5((p: p5) => {
           g.image(bottomFlames, 0, 0);
           g.image(baphomet, 0, 0);
           g.image(topFlames, 0, 0);
+
+          const color: [number, number, number] = colors[watchTowerColor];
+          g.fill(...color);
+          g.textFont('Impact');
+          g.textSize(30);
+
+          g.text(settings.watchTowers.name[watchTowerIndex], 100, 100);
+
           return writePng(g, getOutputFrameFilename(frame));
         });
       })
