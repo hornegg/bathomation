@@ -126,9 +126,13 @@ new p5((p: p5) => {
           const color: [number, number, number] = colors[watchTowerColor];
           g.fill(...color);
           g.textFont('Impact');
-          g.textSize(30);
+          g.textSize(120);
 
-          g.text(settings.watchTowers.name[watchTowerIndex], 100, 100);
+          const text = settings.watchTowers.name[watchTowerIndex];
+
+          const x = (g.width - g.textWidth(text)) / 2;
+
+          g.text(text, x, 150);
 
           return writePng(g, getOutputFrameFilename(frame));
         });
