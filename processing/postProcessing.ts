@@ -119,6 +119,7 @@ new p5((p: p5) => {
           changeHues(bottomFlames, hueAdjustment);
 
           const g = p.createGraphics(settings.width, settings.height);
+
           g.background(255);
           g.image(bottomFlames, 0, 0);
           g.image(baphomet, 0, 0);
@@ -135,23 +136,43 @@ new p5((p: p5) => {
             watchTowerLength,
           ];
 
-          const textSize = segmentedMap(cycleFrame, frameSegments, [
+          const text = settings.watchTowers.name[watchTowerIndex];
+          const textHeight = 120;
+          g.textFont('Impact');
+          g.textSize(textHeight);
+          const gText = p.createGraphics(g.textWidth(text) + 50, textHeight);
+
+          const alpha = segmentedMap(cycleFrame, frameSegments, [
             0,
-            120,
-            120,
+            255,
+            255,
             0,
           ]);
 
           const color: [number, number, number] = colors[watchTowerColor];
-          g.fill(...color);
-          g.textFont('Impact');
-          g.textSize(textSize);
+          gText.textFont('Impact', textHeight);
+          gText.fill(...color, alpha);
 
-          const text = settings.watchTowers.name[watchTowerIndex];
+          const textSize = segmentedMap(cycleFrame, frameSegments, [
+            0,
+            1,
+            1,
+            2,
+          ]);
 
-          const x = (g.width - g.textWidth(text)) / 2;
+          gText.text(text, 0, gText.height);
 
-          g.text(text, x, 150);
+          const textWidth = gText.width * textSize;
+
+          const y = segmentedMap(cycleFrame, frameSegments, [200, 80, 80, -40]);
+
+          g.image(
+            gText,
+            0.5 * (g.width - textWidth),
+            y,
+            textWidth,
+            gText.height * textSize
+          );
 
           return writePng(g, getOutputFrameFilename(frame));
         });
