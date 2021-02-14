@@ -45,7 +45,7 @@ const hueAdjustments = {
 const colors = {
   blue: [0, 0, 255],
   green: [0, 255, 0],
-  yellow: [255, 0, 255],
+  yellow: [255, 255, 0],
   red: [255, 0, 0],
 };
 
