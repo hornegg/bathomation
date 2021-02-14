@@ -99,8 +99,9 @@ new p5((p: p5) => {
         const frame = offset + index;
 
         const watchTowerLength = settings.cycleLength / 4;
-        const cycleFrame = frame % settings.cycleLength;
-        const watchTowerIndex = Math.floor(cycleFrame / watchTowerLength);
+        const cycleFrame666 = frame % settings.cycleLength;
+        const watchTowerFrame = frame % watchTowerLength;
+        const watchTowerIndex = Math.floor(cycleFrame666 / watchTowerLength);
         const watchTowerColor = settings.watchTowers.color[watchTowerIndex];
 
         return Promise.all([
@@ -142,7 +143,7 @@ new p5((p: p5) => {
             textHeight
           );
 
-          const alpha = segmentedMap(cycleFrame, frameSegments, [
+          const alpha = segmentedMap(watchTowerFrame, frameSegments, [
             0,
             255,
             255,
@@ -153,7 +154,7 @@ new p5((p: p5) => {
           gText.textFont('Impact', textHeight);
           gText.fill(...color, alpha);
 
-          const textSize = segmentedMap(cycleFrame, frameSegments, [
+          const textSize = segmentedMap(watchTowerFrame, frameSegments, [
             0,
             1,
             1,
@@ -167,7 +168,7 @@ new p5((p: p5) => {
           const yBase = 25;
           const yAdj = 280;
 
-          const y = segmentedMap(cycleFrame, frameSegments, [
+          const y = segmentedMap(watchTowerFrame, frameSegments, [
             yBase + yAdj,
             yBase,
             yBase,
