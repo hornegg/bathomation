@@ -136,7 +136,7 @@ new p5((p: p5) => {
             watchTowerLength,
           ];
 
-          const text = settings.watchTowers.name[watchTowerIndex];
+          const text = settings.watchTowers.name[watchTowerIndex].toUpperCase();
           const textHeight = 120;
           g.textFont('Impact');
           g.textSize(textHeight);
@@ -164,7 +164,15 @@ new p5((p: p5) => {
 
           const textWidth = gText.width * textSize;
 
-          const y = segmentedMap(cycleFrame, frameSegments, [200, 80, 80, -40]);
+          const yBase = 40;
+          const yAdj = 120;
+
+          const y = segmentedMap(cycleFrame, frameSegments, [
+            yBase + yAdj,
+            yBase,
+            yBase,
+            yBase - yAdj,
+          ]);
 
           g.image(
             gText,
