@@ -140,7 +140,8 @@ new p5((p: p5) => {
           const textHeight = 120;
           g.textFont('Impact');
           g.textSize(textHeight);
-          const gText = p.createGraphics(g.textWidth(text) + 50, textHeight);
+          const textWidthExtra = 50;
+          const gText = p.createGraphics(g.textWidth(text) + textWidthExtra, textHeight);
 
           const alpha = segmentedMap(cycleFrame, frameSegments, [
             0,
@@ -164,7 +165,7 @@ new p5((p: p5) => {
 
           const textWidth = gText.width * textSize;
 
-          const yBase = 40;
+          const yBase = 25;
           const yAdj = 120;
 
           const y = segmentedMap(cycleFrame, frameSegments, [
@@ -176,7 +177,7 @@ new p5((p: p5) => {
 
           g.image(
             gText,
-            0.5 * (g.width - textWidth),
+            0.5 * (g.width - textWidth + textWidthExtra),
             y,
             textWidth,
             gText.height * textSize
