@@ -125,15 +125,11 @@ new p5((p: p5) => {
           g.image(baphomet, 0, 0);
           g.image(topFlames, 0, 0);
 
-          const flareStartFrame = linearMap(0.8, 0, 1, 0, watchTowerLength);
-
-          const flareEndFrame = linearMap(0.9, 0, 1, 0, watchTowerLength);
-
           const frameSegments = [
-            0,
-            flareStartFrame,
-            flareEndFrame,
-            watchTowerLength,
+            linearMap(0.5, 0, 1, 0, watchTowerLength),
+            linearMap(0.6, 0, 1, 0, watchTowerLength),
+            linearMap(0.7, 0, 1, 0, watchTowerLength),
+            linearMap(0.8, 0, 1, 0, watchTowerLength),
           ];
 
           const text = settings.watchTowers.name[watchTowerIndex].toUpperCase();
@@ -141,7 +137,10 @@ new p5((p: p5) => {
           g.textFont('Impact');
           g.textSize(textHeight);
           const textWidthExtra = 50;
-          const gText = p.createGraphics(g.textWidth(text) + textWidthExtra, textHeight);
+          const gText = p.createGraphics(
+            g.textWidth(text) + textWidthExtra,
+            textHeight
+          );
 
           const alpha = segmentedMap(cycleFrame, frameSegments, [
             0,
@@ -166,7 +165,7 @@ new p5((p: p5) => {
           const textWidth = gText.width * textSize;
 
           const yBase = 25;
-          const yAdj = 120;
+          const yAdj = 280;
 
           const y = segmentedMap(cycleFrame, frameSegments, [
             yBase + yAdj,
