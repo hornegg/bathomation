@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as React from 'react';
+import 'react-three-fiber';
 
 import { floorLevel, outlineMaterial } from './common';
 

@@ -22,8 +22,8 @@ const watchTowersQuillhoth: WatchTowers = {
 };
 
 const settings: SettingsInterface = {
-  width: 600,
-  height: 800,
+  width: 800,
+  height: 600,
   cycleLength: 1200, // The number of frames before the animation repeats itself
   fps: 30, // Frames per second
   frameCapture: false,
