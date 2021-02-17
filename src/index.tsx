@@ -127,7 +127,7 @@ Promise.all([
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
           <Arm
             sign={1}
-            lookAt={
+            pointAt={
               new THREE.Vector3(
                 10 * Math.cos(0.1 * state.frame),
                 10 * Math.sin(0.1 * state.frame),
@@ -137,7 +137,7 @@ Promise.all([
           />
           <Arm
             sign={-1}
-            lookAt={
+            pointAt={
               new THREE.Vector3(
                 10 * Math.cos(0.1 * state.frame),
                 10 * Math.sin(0.1 * state.frame),

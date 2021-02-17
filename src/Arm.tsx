@@ -9,7 +9,7 @@ const girth = 0.3;
 const length = 0.7;
 
 class ArmProps {
-  lookAt: THREE.Vector3;
+  pointAt: THREE.Vector3;
   sign: 1 | -1;
 }
 
@@ -35,7 +35,7 @@ const Arm = (props: ArmProps): JSX.Element => {
   arm.translateX(props.sign * 0.75);
   arm.translateY(-1.3);
 
-  arm.lookAt(props.lookAt);
+  arm.lookAt(props.pointAt);
   return <primitive object={arm} />;
 };
 
