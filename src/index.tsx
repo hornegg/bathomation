@@ -125,7 +125,26 @@ Promise.all([
           <primitive object={head} />
           <mesh geometry={bodyGeometry} material={skin} />
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          <Arm lookAt={new THREE.Vector3(10 * Math.cos(0.1 * state.frame), 10 * Math.sin(0.1 * state.frame), 10)} />
+          <Arm
+            sign={1}
+            lookAt={
+              new THREE.Vector3(
+                10 * Math.cos(0.1 * state.frame),
+                10 * Math.sin(0.1 * state.frame),
+                10
+              )
+            }
+          />
+          <Arm
+            sign={-1}
+            lookAt={
+              new THREE.Vector3(
+                10 * Math.cos(0.1 * state.frame),
+                10 * Math.sin(0.1 * state.frame),
+                10
+              )
+            }
+          />
         </group>
       );
 
