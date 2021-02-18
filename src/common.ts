@@ -84,6 +84,12 @@ export const headDepth = 1;
 
 export const floorLevel = -3.1;
 
+interface Polar {
+  r: number;
+  theta: number;
+  phi: number;
+}
+
 export const ellipticalToCartesian = (
   r: number,
   theta: number,
@@ -97,6 +103,17 @@ export const ellipticalToCartesian = (
     r * headHeight * Math.sin(theta) * Math.sin(phi),
     r * headDepth * Math.cos(theta)
   );
+};
+
+export const cartesianToSpherical = (
+  x: number,
+  y: number,
+  z: number
+): Polar => {
+  const r = Math.sqrt((x * x) + (y * y) + (z * z));
+  const theta = Math.acos(z / r);
+  const phi = Math.atan2(y, x);
+  return {r, theta, phi};
 };
 
 //

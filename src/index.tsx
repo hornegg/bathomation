@@ -120,31 +120,16 @@ Promise.all([
         setState(choreograph(state.frame + 1));
       });
 
+      const neutralLeft = new THREE.Vector3(-100, 400, 0);
+      const neutralRight = new THREE.Vector3(100, 400, 0);
+
       const Body = () => (
         <group rotation={new THREE.Euler(0, state.bodyAngle, 0)}>
           <primitive object={head} />
           <mesh geometry={bodyGeometry} material={skin} />
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          <Arm
-            sign={1}
-            pointAt={
-              new THREE.Vector3(
-                10 * Math.cos(0.1 * state.frame),
-                10 * Math.sin(0.1 * state.frame),
-                10
-              )
-            }
-          />
-          <Arm
-            sign={-1}
-            pointAt={
-              new THREE.Vector3(
-                10 * Math.cos(0.1 * state.frame),
-                10 * Math.sin(0.1 * state.frame),
-                10
-              )
-            }
-          />
+          <Arm sign={1} pointAt={neutralLeft} />
+          <Arm sign={-1} pointAt={neutralRight} />
         </group>
       );
 
