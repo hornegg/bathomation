@@ -8,12 +8,13 @@ import {
   linearMap,
   loadGeometry,
   outlineMaterial,
+  PI,
   segmentedMap,
   skin,
 } from './common';
 
 import { createHead } from './head';
-import { Pentagram } from './pentagram';
+import { getPointOnPentagram, Pentagram } from './pentagram';
 import FrameLimiter from './components/FrameLimiter';
 import FrameRate from './components/FrameRate';
 import settings from './settings';
@@ -120,16 +121,21 @@ Promise.all([
         setState(choreograph(state.frame + 1));
       });
 
-      const neutralLeft = new THREE.Vector3(-100, 400, 0);
-      const neutralRight = new THREE.Vector3(100, 400, 0);
+      const neutralLeft = new THREE.Vector3(-100, -400, 0);
+      const neutralRight = new THREE.Vector3(100, -400, 0);
+
+      const watchTowerFrame = state.frame % watchTowerLength;
+      const pointAt = getPointOnPentagram(
+        linearMap(watchTowerFrame, 0, 0.5 * watchTowerLength, 0, 5)
+      );
 
       const Body = () => (
         <group rotation={new THREE.Euler(0, state.bodyAngle, 0)}>
           <primitive object={head} />
           <mesh geometry={bodyGeometry} material={skin} />
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          <Arm sign={1} pointAt={neutralLeft} />
-          <Arm sign={-1} pointAt={neutralRight} />
+          <Arm sign={1} pointAt={neutralLeft} rotateY={0}/>
+          <Arm sign={-1} pointAt={pointAt} rotateY={-state.bodyAngle + PI}/>
         </group>
       );
 

@@ -11,6 +11,7 @@ const length = 0.7;
 class ArmProps {
   pointAt: THREE.Vector3;
   sign: 1 | -1;
+  rotateY: number;
 }
 
 const Arm = (props: ArmProps): JSX.Element => {
@@ -37,8 +38,8 @@ const Arm = (props: ArmProps): JSX.Element => {
   arm.translateY(-1.1);
 
   const polar = cartesianToSpherical(...props.pointAt.toArray());
-  arm.rotateX(polar.theta);
-  arm.rotateY(polar.phi);
+  arm.rotateX(-polar.theta);
+  arm.rotateY(polar.phi + props.rotateY);
 
   return <primitive object={arm} />;
 };
