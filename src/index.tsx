@@ -121,12 +121,13 @@ Promise.all([
         setState(choreograph(state.frame + 1));
       });
 
-      const neutralLeft = new THREE.Vector3(-100, -400, 0);
-      const neutralRight = new THREE.Vector3(100, -400, 0);
+      const neutralLeft = new THREE.Vector3(100, -400, 0);
+      const neutralRight = new THREE.Vector3(-100, -400, 0);
 
       const watchTowerFrame = state.frame % watchTowerLength;
       const pointAt = getPointOnPentagram(
-        linearMap(watchTowerFrame, 0, 0.5 * watchTowerLength, 0, 5)
+        0
+        //        linearMap(watchTowerFrame, 0, 0.5 * watchTowerLength, 0, 5)
       );
 
       const Body = () => (
@@ -134,8 +135,8 @@ Promise.all([
           <primitive object={head} />
           <mesh geometry={bodyGeometry} material={skin} />
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          <Arm sign={1} pointAt={neutralLeft} rotateY={0}/>
-          <Arm sign={-1} pointAt={pointAt} rotateY={-state.bodyAngle + PI}/>
+          <Arm sign={1} pointAt={neutralLeft} rotateY={0} />
+          <Arm sign={-1} pointAt={neutralRight} rotateY={0} />
         </group>
       );
 
