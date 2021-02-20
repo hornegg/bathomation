@@ -2,7 +2,13 @@ import * as THREE from 'three';
 import * as React from 'react';
 import 'react-three-fiber';
 
-import { linearMap, outlineMaterial, skin, TWO_PI } from './common';
+import {
+  linearMap,
+  outlineMaterial,
+  segmentedMap,
+  skin,
+  TWO_PI,
+} from './common';
 
 const parametricEllipsoid = (
   start: THREE.Vector3,
@@ -29,8 +35,8 @@ const parametricEllipsoid = (
       linearMap(u, 0, 1, start.z, end.z)
     );
 
-    const circlePosition = 2 * Math.abs(u - 0.5);
-    const girth = maxGirth * Math.sqrt(1 - circlePosition);
+    const u2 = segmentedMap(u, [0, 0.5, 1], [1, 0, 1]);
+    const girth = maxGirth * Math.sqrt(1 - (u2 * u2));
     const angle = linearMap(v, 0, 1, 0, TWO_PI);
     const component1 = perp1.clone().multiplyScalar(girth * Math.cos(angle));
     const component2 = perp2.clone().multiplyScalar(girth * Math.sin(angle));
@@ -38,6 +44,45 @@ const parametricEllipsoid = (
     dest.add(component1);
     dest.add(component2);
   };
+};
+
+const outlinedParametricEllipsoid = (
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  maxGirth: number
+) => {
+  const scalar = 0.07;
+  const adjustment = end.clone().sub(start).normalize().multiplyScalar(scalar);
+
+  const arm = new THREE.Group();
+
+  arm.add(
+    new THREE.Mesh(
+      new THREE.ParametricGeometry(
+        parametricEllipsoid(start, end, maxGirth),
+        20,
+        20
+      ),
+      skin
+    )
+  );
+
+  arm.add(
+    new THREE.Mesh(
+      new THREE.ParametricGeometry(
+        parametricEllipsoid(
+          start.clone().sub(adjustment),
+          end.clone().add(adjustment),
+          maxGirth + scalar
+        ),
+        20,
+        20
+      ),
+      outlineMaterial
+    )
+  );
+
+  return arm;
 };
 
 const girth = 0.3;
@@ -59,19 +104,7 @@ const Arm = (props: ArmProps): JSX.Element => {
     .multiplyScalar(length)
     .add(start);
 
-  const armEllipsoid = new THREE.Mesh(
-    new THREE.ParametricGeometry(
-      parametricEllipsoid(start, end, girth),
-      20,
-      20
-    ),
-    skin
-  );
-
-  const arm = new THREE.Group();
-
-  arm.add(armEllipsoid);
-  //  arm.add(outlineEllipsoid);
+  const arm = outlinedParametricEllipsoid(start, end, girth);
 
   return <primitive object={arm} />;
 };
