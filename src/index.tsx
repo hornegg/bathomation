@@ -8,7 +8,6 @@ import {
   linearMap,
   loadGeometry,
   outlineMaterial,
-  PI,
   segmentedMap,
   skin,
 } from './common';
@@ -122,12 +121,17 @@ Promise.all([
       });
 
       const neutralLeft = new THREE.Vector3(100, -400, 0);
-      const neutralRight = new THREE.Vector3(-100, -400, 0);
+      // const neutralRight = new THREE.Vector3(-100, -400, 0);
 
       const watchTowerFrame = state.frame % watchTowerLength;
-      const pointAt = getPointOnPentagram(
-        0
-        //        linearMap(watchTowerFrame, 0, 0.5 * watchTowerLength, 0, 5)
+      const pointOnPentagram = getPointOnPentagram(
+        linearMap(watchTowerFrame, 0, 0.5 * watchTowerLength, 0, 5)
+      );
+
+      const pointAt = new THREE.Vector3(
+        pointOnPentagram.z,
+        pointOnPentagram.y,
+        -pointOnPentagram.x
       );
 
       const Body = () => (
@@ -135,8 +139,8 @@ Promise.all([
           <primitive object={head} />
           <mesh geometry={bodyGeometry} material={skin} />
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          <Arm sign={1} pointAt={neutralLeft} rotateY={0} />
-          <Arm sign={-1} pointAt={neutralRight} rotateY={0} />
+          <Arm sign={1} pointAt={neutralLeft} />
+          <Arm sign={-1} pointAt={pointAt} />
         </group>
       );
 

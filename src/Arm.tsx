@@ -91,7 +91,6 @@ const length = 1.4;
 class ArmProps {
   pointAt: THREE.Vector3;
   sign: 1 | -1;
-  rotateY: number;
 }
 
 const Arm = (props: ArmProps): JSX.Element => {
