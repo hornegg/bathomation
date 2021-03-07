@@ -125,7 +125,13 @@ Promise.all([
 
       const watchTowerFrame = state.frame % watchTowerLength;
       const pointOnPentagram = getPointOnPentagram(
-        linearMap(watchTowerFrame, 0, 0.5 * watchTowerLength, 0, 5)
+        linearMap(
+          watchTowerFrame,
+          0.1 * watchTowerLength,
+          0.4 * watchTowerLength,
+          0,
+          5
+        )
       );
 
       const pointAt = new THREE.Vector3(

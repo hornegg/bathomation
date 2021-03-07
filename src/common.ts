@@ -78,6 +78,28 @@ export const segmentedMap = (
   }
 };
 
+export type IMap3 = (
+  value: number,
+  range1start: number,
+  range1end: number,
+  range2start: THREE.Vector3,
+  range2end: THREE.Vector3
+) => THREE.Vector3;
+
+export const linearMap3 = (
+  value: number,
+  range1start: number,
+  range1end: number,
+  range2start: THREE.Vector3,
+  range2end: THREE.Vector3
+): THREE.Vector3 => {
+  return new THREE.Vector3(
+    linearMap(value, range1start, range1end, range2start.x, range2end.x),
+    linearMap(value, range1start, range1end, range2start.y, range2end.y),
+    linearMap(value, range1start, range1end, range2start.z, range2end.z)
+  );
+};
+
 export const headWidth = 1.5;
 export const headHeight = 1;
 export const headDepth = 1;

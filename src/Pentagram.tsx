@@ -4,7 +4,7 @@ import { useFrame } from 'react-three-fiber';
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
 
-import { HALF_PI, linearMap, PI, powerMap, segmentedMap } from './common';
+import { HALF_PI, linearMap, linearMap3, PI, powerMap, segmentedMap } from './common';
 import settings from './settings';
 
 const getPointOnPentagon = (pt: number) => {
@@ -28,11 +28,7 @@ export const getPointOnPentagram = (v: number): THREE.Vector3 => {
   const start = getPointOnPentagon(sideStart);
   const end = getPointOnPentagon(sideEnd);
 
-  return new THREE.Vector3(
-    linearMap(v, sideStart, sideEnd, start.x, end.x),
-    linearMap(v, sideStart, sideEnd, start.y, end.y),
-    linearMap(v, sideStart, sideEnd, start.z, end.z)
-  );
+  return linearMap3(v, sideStart, sideEnd, start, end);
 };
 
 const textureLoader = new THREE.TextureLoader();
