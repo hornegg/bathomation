@@ -85,8 +85,8 @@ const outlinedParametricEllipsoid = (
   return arm;
 };
 
-const girth = 0.3;
-const length = 1.4;
+const girth = 0.25;
+const length = 1.2;
 
 class ArmProps {
   pointAt: THREE.Vector3;
@@ -94,7 +94,7 @@ class ArmProps {
 }
 
 const Arm = (props: ArmProps): JSX.Element => {
-  const start = new THREE.Vector3(props.sign * 0.75, -1.1, 0);
+  const start = new THREE.Vector3(props.sign * 0.60, -1.3, 0.5);
 
   const end: THREE.Vector3 = props.pointAt
     .clone()
