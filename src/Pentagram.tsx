@@ -4,10 +4,19 @@ import { useFrame } from 'react-three-fiber';
 import './THREE.Fire/Fire';
 import './THREE.Fire/FireShader';
 
-import { HALF_PI, linearMap, linearMap3, PI, powerMap, segmentedMap } from './common';
+import {
+  HALF_PI,
+  linearMap,
+  linearMap3,
+  PI,
+  powerMap,
+  segmentedMap,
+} from './common';
 import settings from './settings';
 
-const getPointOnPentagon = (pt: number) => {
+export const pentagramCentre = new THREE.Vector3(-2, 0, 0);
+
+export const getPointOnPentagon = (pt: number): THREE.Vector3 => {
   // map the point so the drawing starts in the right place
   const n = (pt - 1) % 5;
 

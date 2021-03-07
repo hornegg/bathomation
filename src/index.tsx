@@ -8,12 +8,13 @@ import {
   linearMap,
   loadGeometry,
   outlineMaterial,
+  segmentedLinearMap3,
   segmentedMap,
   skin,
 } from './common';
 
 import { createHead } from './head';
-import { getPointOnPentagram, Pentagram } from './pentagram';
+import { getPointOnPentagon, Pentagram, pentagramCentre } from './pentagram';
 import FrameLimiter from './components/FrameLimiter';
 import FrameRate from './components/FrameRate';
 import settings from './settings';
@@ -121,24 +122,37 @@ Promise.all([
       });
 
       const neutralLeft = new THREE.Vector3(100, -400, 0);
-      // const neutralRight = new THREE.Vector3(-100, -400, 0);
+      const neutralRight = new THREE.Vector3(-100, -400, 0);
+
+      const pentagramStart = 0.1 * watchTowerLength;
+      const pentagramEnd = 0.4 * watchTowerLength;
+      const centreStart = 0.6 * watchTowerLength;
+      const centreEnd = 0.7 * watchTowerLength;
+
+      const frameSegments = [
+        0,
+        ...[0, 1, 2, 3, 4, 5].map((v) =>
+          linearMap(v, 0, 5, pentagramStart, pentagramEnd)
+        ),
+        centreStart,
+        centreEnd,
+        watchTowerLength,
+      ];
+
+      const pointOnPentagonTweaked = (v: number) => {
+        const pt = getPointOnPentagon(v);
+        return new THREE.Vector3(pt.z, pt.y, -pt.x);
+      };
 
       const watchTowerFrame = state.frame % watchTowerLength;
-      const pointOnPentagram = getPointOnPentagram(
-        linearMap(
-          watchTowerFrame,
-          0.1 * watchTowerLength,
-          0.4 * watchTowerLength,
-          0,
-          5
-        )
-      );
 
-      const pointAt = new THREE.Vector3(
-        pointOnPentagram.z,
-        pointOnPentagram.y,
-        -pointOnPentagram.x
-      );
+      const pointAt = segmentedLinearMap3(watchTowerFrame, frameSegments, [
+        neutralRight,
+        ...[0, 1, 2, 3, 4, 5].map((v) => pointOnPentagonTweaked(v)),
+        pentagramCentre,
+        pentagramCentre,
+        neutralRight,
+      ]);
 
       const Body = () => (
         <group rotation={new THREE.Euler(0, state.bodyAngle, 0)}>
