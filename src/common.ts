@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { BufferGeometry } from 'three';
+import settings from './settings';
 
 export const PI = Math.PI;
 export const TWO_PI = 2 * PI;
@@ -121,6 +122,8 @@ export const headHeight = 1;
 export const headDepth = 1;
 
 export const floorLevel = -3.1;
+
+export const watchTowerLength = settings.cycleLength / 4;
 
 export const ellipticalToCartesian = (
   r: number,

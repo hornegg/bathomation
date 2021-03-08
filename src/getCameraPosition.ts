@@ -1,11 +1,16 @@
 import * as THREE from 'three';
 
-import { HALF_PI, QUARTER_PI, PI, EIGHTH_PI, segmentedMap } from './common';
+import {
+  HALF_PI,
+  QUARTER_PI,
+  PI,
+  EIGHTH_PI,
+  segmentedMap,
+  watchTowerLength,
+} from './common';
 import settings from './settings';
 
 const getCameraPosition = (frame: number): THREE.Vector3 => {
-  const watchTowerLength = settings.cycleLength / 4;
-
   const baseHeight = HALF_PI;
   const baseAngle = PI + QUARTER_PI;
 

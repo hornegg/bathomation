@@ -6,7 +6,7 @@ import * as pLimit from 'p-limit';
 
 import { p5, readPng, writePng } from './p5Headless';
 import settings from '../src/settings';
-import { linearMap, segmentedMap } from '../src/common';
+import { linearMap, segmentedMap, watchTowerLength } from '../src/common';
 
 const usage = 'usage: ts-node postProcessing.ts [offset] [frameCount]';
 
@@ -98,7 +98,6 @@ new p5((p: p5) => {
       limit(() => {
         const frame = offset + index;
 
-        const watchTowerLength = settings.cycleLength / 4;
         const cycleFrame666 = frame % settings.cycleLength;
         const watchTowerFrame = frame % watchTowerLength;
         const watchTowerIndex = Math.floor(cycleFrame666 / watchTowerLength);

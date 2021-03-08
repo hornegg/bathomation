@@ -9,8 +9,8 @@ import {
   loadGeometry,
   outlineMaterial,
   segmentedLinearMap3,
-  segmentedMap,
   skin,
+  watchTowerLength,
 } from './common';
 
 import { createHead } from './head';
@@ -22,9 +22,7 @@ import FrameCapture from './components/FrameCapture';
 import getCameraPosition from './getCameraPosition';
 import Room from './Room';
 import Arm from './Arm';
-
-const watchTowerLength = settings.cycleLength / 4;
-const pentagramLength = (2 * watchTowerLength) / 3;
+import { choreograph, pentagramLength } from './choreograph';
 
 Promise.all([
   createHead(),
@@ -44,70 +42,6 @@ Promise.all([
     rightFootGeometry,
     outlineRightFootGeometry,
   ]) => {
-    interface LayerInfo {
-      topFlames: boolean;
-      baphomet: boolean;
-      bottomFlames: boolean;
-    }
-
-    interface MainState {
-      frame: number;
-      bodyAngle: number;
-      leftFootAngle: number;
-      rightFootAngle: number;
-      layerInfo: LayerInfo;
-    }
-
-    const choreograph = (frame: number): MainState => {
-      const midStepLength = linearMap(
-        0.5,
-        0,
-        1,
-        pentagramLength,
-        watchTowerLength
-      );
-
-      const cycleFrame = frame % settings.cycleLength;
-      const watchTower = 3 - Math.floor(cycleFrame / watchTowerLength);
-      const watchTowerFrame = cycleFrame % watchTowerLength;
-
-      const bodyAngle = segmentedMap(
-        watchTowerFrame,
-        [pentagramLength, watchTowerLength],
-        [watchTower * HALF_PI, (watchTower - 1) * HALF_PI]
-      );
-
-      const leftFootAngle = segmentedMap(
-        watchTowerFrame,
-        [pentagramLength, midStepLength],
-        [watchTower * HALF_PI, (watchTower - 1) * HALF_PI]
-      );
-
-      const rightFootAngle = segmentedMap(
-        watchTowerFrame,
-        [midStepLength, watchTowerLength],
-        [watchTower * HALF_PI, (watchTower - 1) * HALF_PI]
-      );
-
-      const layer = Math.floor(frame / settings.cycleLength) % 3;
-
-      const layerInfo = settings.frameCapture
-        ? {
-            topFlames: layer === 0,
-            baphomet: layer === 1,
-            bottomFlames: layer === 2,
-          }
-        : { topFlames: true, baphomet: true, bottomFlames: true };
-
-      return {
-        frame,
-        bodyAngle,
-        leftFootAngle,
-        rightFootAngle,
-        layerInfo,
-      };
-    };
-
     const Main = () => {
       const [state, setState] = React.useState(choreograph(0));
 
