@@ -5,16 +5,14 @@ import * as THREE from 'three';
 
 import {
   HALF_PI,
-  linearMap,
   loadGeometry,
   outlineMaterial,
-  segmentedLinearMap3,
   skin,
   watchTowerLength,
 } from './common';
 
 import { createHead } from './head';
-import { getPointOnPentagon, Pentagram, pentagramCentre } from './pentagram';
+import { Pentagram } from './pentagram';
 import FrameLimiter from './components/FrameLimiter';
 import FrameRate from './components/FrameRate';
 import settings from './settings';
@@ -22,7 +20,12 @@ import FrameCapture from './components/FrameCapture';
 import getCameraPosition from './getCameraPosition';
 import Room from './Room';
 import Arm from './Arm';
-import { choreograph, pentagramLength } from './choreograph';
+import {
+  choreographBody,
+  choreographArm,
+  pentagramLength,
+  stillArm,
+} from './choreograph';
 
 Promise.all([
   createHead(),
@@ -43,7 +46,7 @@ Promise.all([
     outlineRightFootGeometry,
   ]) => {
     const Main = () => {
-      const [state, setState] = React.useState(choreograph(0));
+      const [state, setState] = React.useState(choreographBody(0));
 
       useFrame((canvasContext: CanvasContext) => {
         const [x, y, z] = getCameraPosition(state.frame).toArray();
@@ -52,48 +55,18 @@ Promise.all([
         canvasContext.camera.lookAt(0, -0.6 + yAdjust, 0);
 
         // Now update the body position based on what frame number this is
-        setState(choreograph(state.frame + 1));
+        setState(choreographBody(state.frame + 1));
       });
 
-      const neutralLeft = new THREE.Vector3(100, -400, 0);
-      const neutralRight = new THREE.Vector3(-100, -400, 0);
-
-      const pentagramStart = 0.1 * watchTowerLength;
-      const pentagramEnd = 0.4 * watchTowerLength;
-      const centreStart = 0.6 * watchTowerLength;
-      const centreEnd = 0.7 * watchTowerLength;
-
-      const frameSegments = [
-        0,
-        ...[0, 1, 2, 3, 4, 5].map((v) =>
-          linearMap(v, 0, 5, pentagramStart, pentagramEnd)
-        ),
-        centreStart,
-        centreEnd,
-        watchTowerLength,
-      ];
-
-      const changeCoords = (pt: THREE.Vector3) => {
-        return new THREE.Vector3(pt.z, pt.y, -pt.x);
-      };
-
       const watchTowerFrame = state.frame % watchTowerLength;
-
-      const pointAt = segmentedLinearMap3(watchTowerFrame, frameSegments, [
-        neutralRight,
-        ...[0, 1, 2, 3, 4, 5].map((v) => changeCoords(getPointOnPentagon(v))),
-        changeCoords(pentagramCentre),
-        changeCoords(pentagramCentre),
-        neutralRight,
-      ]);
 
       const Body = () => (
         <group rotation={new THREE.Euler(0, state.bodyAngle, 0)}>
           <primitive object={head} />
           <mesh geometry={bodyGeometry} material={skin} />
           <mesh geometry={outlineBodyGeometry} material={outlineMaterial} />
-          <Arm sign={1} pointAt={neutralLeft} />
-          <Arm sign={-1} pointAt={pointAt} />
+          <Arm sign={1} pointAt={stillArm} />
+          <Arm sign={-1} pointAt={choreographArm(watchTowerFrame)} />
         </group>
       );
 

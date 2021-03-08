@@ -1,10 +1,19 @@
-import { HALF_PI, linearMap, segmentedMap, watchTowerLength } from './common';
+import * as THREE from 'three';
+
+import {
+  HALF_PI,
+  linearMap,
+  segmentedLinearMap3,
+  segmentedMap,
+  watchTowerLength,
+} from './common';
 import { MainState } from './mainState';
+import { getPointOnPentagon, pentagramCentre } from './pentagram';
 import settings from './settings';
 
 export const pentagramLength = (2 * watchTowerLength) / 3;
 
-export const choreograph = (frame: number): MainState => {
+export const choreographBody = (frame: number): MainState => {
   const midStepLength = linearMap(0.5, 0, 1, pentagramLength, watchTowerLength);
 
   const cycleFrame = frame % settings.cycleLength;
@@ -46,4 +55,40 @@ export const choreograph = (frame: number): MainState => {
     rightFootAngle,
     layerInfo,
   };
+};
+
+const neutralLeft = new THREE.Vector3(100, -400, 0);
+const neutralRight = new THREE.Vector3(-100, -400, 0);
+
+export const stillArm = neutralLeft;
+
+export const choreographArm = (watchTowerFrame: number): THREE.Vector3 => {
+  const pentagramStart = 0.1 * watchTowerLength;
+  const pentagramEnd = 0.4 * watchTowerLength;
+  const centreStart = 0.6 * watchTowerLength;
+  const centreEnd = 0.7 * watchTowerLength;
+
+  const frameSegments = [
+    0,
+    ...[0, 1, 2, 3, 4, 5].map((v) =>
+      linearMap(v, 0, 5, pentagramStart, pentagramEnd)
+    ),
+    centreStart,
+    centreEnd,
+    watchTowerLength,
+  ];
+
+  const changeCoords = (pt: THREE.Vector3) => {
+    return new THREE.Vector3(pt.z, pt.y, -pt.x);
+  };
+
+  const pointAt = segmentedLinearMap3(watchTowerFrame, frameSegments, [
+    neutralRight,
+    ...[0, 1, 2, 3, 4, 5].map((v) => changeCoords(getPointOnPentagon(v))),
+    changeCoords(pentagramCentre),
+    changeCoords(pentagramCentre),
+    neutralRight,
+  ]);
+
+  return pointAt;
 };
