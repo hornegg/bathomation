@@ -139,8 +139,7 @@ Promise.all([
         watchTowerLength,
       ];
 
-      const pointOnPentagonTweaked = (v: number) => {
-        const pt = getPointOnPentagon(v);
+      const changeCoords = (pt: THREE.Vector3) => {
         return new THREE.Vector3(pt.z, pt.y, -pt.x);
       };
 
@@ -148,9 +147,9 @@ Promise.all([
 
       const pointAt = segmentedLinearMap3(watchTowerFrame, frameSegments, [
         neutralRight,
-        ...[0, 1, 2, 3, 4, 5].map((v) => pointOnPentagonTweaked(v)),
-        pentagramCentre,
-        pentagramCentre,
+        ...[0, 1, 2, 3, 4, 5].map((v) => changeCoords(getPointOnPentagon(v))),
+        changeCoords(pentagramCentre),
+        changeCoords(pentagramCentre),
         neutralRight,
       ]);
 
