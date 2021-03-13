@@ -98,7 +98,7 @@ export const segmentedLinearMap3 = (
   range1: number[],
   range2: THREE.Vector3[]
 ): THREE.Vector3 => {
-  return new THREE.Vector3(
+  const result = new THREE.Vector3(
     segmentedMap(
       value,
       range1,
@@ -115,6 +115,7 @@ export const segmentedLinearMap3 = (
       range2.map((v) => v.z)
     )
   );
+  return result;
 };
 
 export const headWidth = 1.5;

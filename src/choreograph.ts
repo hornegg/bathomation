@@ -57,12 +57,16 @@ export const choreographBody = (frame: number): MainState => {
   };
 };
 
-const neutralLeft = new THREE.Vector3(100, -400, 0);
-const neutralRight = new THREE.Vector3(-100, -400, 0);
+const neutralLeft = new THREE.Vector3(1, -4, 0);
+const neutralRight = new THREE.Vector3(-1, -4, 0);
 
 export const stillArm = neutralLeft;
 
 export const choreographArm = (watchTowerFrame: number): THREE.Vector3 => {
+  const changeCoords = (pt: THREE.Vector3) => {
+    return new THREE.Vector3(pt.z, pt.y, -pt.x);
+  };
+
   const pentagramStart = 0.1 * watchTowerLength;
   const pentagramEnd = 0.4 * watchTowerLength;
   const centreStart = 0.6 * watchTowerLength;
@@ -78,17 +82,19 @@ export const choreographArm = (watchTowerFrame: number): THREE.Vector3 => {
     watchTowerLength,
   ];
 
-  const changeCoords = (pt: THREE.Vector3) => {
-    return new THREE.Vector3(pt.z, pt.y, -pt.x);
-  };
-
-  const pointAt = segmentedLinearMap3(watchTowerFrame, frameSegments, [
+  const positionSegments = [
     neutralRight,
     ...[0, 1, 2, 3, 4, 5].map((v) => changeCoords(getPointOnPentagon(v))),
     changeCoords(pentagramCentre),
     changeCoords(pentagramCentre),
     neutralRight,
-  ]);
+  ];
+
+  const pointAt = segmentedLinearMap3(
+    watchTowerFrame,
+    frameSegments,
+    positionSegments
+  );
 
   return pointAt;
 };
