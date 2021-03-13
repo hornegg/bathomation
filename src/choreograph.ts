@@ -67,10 +67,11 @@ export const choreographArm = (watchTowerFrame: number): THREE.Vector3 => {
     return new THREE.Vector3(pt.z, pt.y, -pt.x);
   };
 
-  const pentagramStart = 0.1 * watchTowerLength;
+  const pentagramStart = 0.05 * watchTowerLength;
   const pentagramEnd = 0.4 * watchTowerLength;
-  const centreStart = 0.6 * watchTowerLength;
-  const centreEnd = 0.7 * watchTowerLength;
+  const centreStart = 0.45 * watchTowerLength;
+  const centreEnd = 0.65 * watchTowerLength;
+  const finish = 0.75 * watchTowerLength;
 
   const frameSegments = [
     0,
@@ -79,7 +80,7 @@ export const choreographArm = (watchTowerFrame: number): THREE.Vector3 => {
     ),
     centreStart,
     centreEnd,
-    watchTowerLength,
+    finish,
   ];
 
   const positionSegments = [
